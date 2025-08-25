@@ -6,14 +6,11 @@ export const RecentCourses = () => {
     <section className="mb-8">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-foreground">최근 업로드 된 강의</h2>
-        <button className="text-accent hover:text-accent/80 text-sm font-medium">
-          전체보기
-        </button>
       </div>
 
       {/* Responsive Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {recentCoursesData.map(course => (
+        {recentCoursesData.slice(0, 4).map(course => (
           <div key={course.id} className="edu-card">
             {/* Thumbnail */}
             <div className="aspect-video bg-muted relative overflow-hidden">

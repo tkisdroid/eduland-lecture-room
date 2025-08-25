@@ -89,13 +89,6 @@ export const LectureTabs = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">핵심 요약</h3>
-        <button 
-          onClick={() => copyToClipboard(summaryItems.map(item => `${item.title}: ${item.content}`).join('\n'))}
-          className="btn-lecture"
-        >
-          <Copy className="w-3 h-3 mr-1" />
-          전체 복사하기
-        </button>
       </div>
       
       <div className="space-y-3">
