@@ -75,7 +75,7 @@ const Index = () => {
         <main className="flex-1 lg:ml-[336px]">
           <div className="max-w-[1280px] mx-auto px-4 py-6">
             {/* Video Player Section */}
-            <div className={`mb-8 transition-all duration-300 ${
+            <div className={`mb-8 ${
               isScrolled 
                 ? 'fixed top-20 right-6 z-50 w-80 md:w-96 lg:w-[420px] xl:w-[480px] shadow-2xl rounded-lg' 
                 : 'relative w-full'
