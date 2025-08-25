@@ -167,7 +167,12 @@ export const LectureSidebar = ({
                           onClick={() => toggleSection(section.id)}
                           className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
                         >
-                          <span>{section.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span>{section.name}</span>
+                            <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
+                              {section.lectures.length}개
+                            </span>
+                          </div>
                           {expandedSections.includes(section.id) ? (
                             <ChevronDown className="w-4 h-4" />
                           ) : (
@@ -197,7 +202,12 @@ export const LectureSidebar = ({
                                   onClick={() => toggleSection(specialSection.id)}
                                   className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
                                 >
-                                  <span>{specialSection.name}</span>
+                                  <div className="flex items-center gap-2">
+                                    <span>{specialSection.name}</span>
+                                    <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
+                                      {specialSection.lectures.length}개
+                                    </span>
+                                  </div>
                                   {expandedSections.includes(specialSection.id) ? (
                                     <ChevronDown className="w-4 h-4" />
                                   ) : (
@@ -260,7 +270,12 @@ export const LectureSidebar = ({
                           onClick={() => toggleSection(section.id)}
                           className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
                         >
-                          <span>{section.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span>{section.name}</span>
+                            <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
+                              {section.lectures.length}개
+                            </span>
+                          </div>
                           {expandedSections.includes(section.id) ? (
                             <ChevronDown className="w-4 h-4" />
                           ) : (

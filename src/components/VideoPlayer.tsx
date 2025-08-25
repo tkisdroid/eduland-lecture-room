@@ -25,7 +25,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   
   // Convert YouTube URL to embed format
   const getEmbedUrl = () => {
-    return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&iv_load_policy=3&playsinline=1&autoplay=0&cc_load_policy=0&fs=1&hl=ko`;
+    return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&iv_load_policy=3&playsinline=1&autoplay=1&cc_load_policy=0&fs=1&hl=ko`;
   };
 
   // Basic control handlers (for display purposes)
@@ -54,6 +54,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
       {/* Video Player Container */}
       <div className="aspect-video bg-black rounded-lg overflow-hidden">
         <iframe
+          key={videoId} // Force re-render when video changes
           src={getEmbedUrl()}
           title={title}
           className="w-full h-full"
