@@ -65,17 +65,14 @@ const Index = () => {
                 <h1 className="text-2xl font-bold text-foreground mb-3">
                   {currentLecture.title}
                 </h1>
-                <div className="flex flex-wrap gap-2">
-                  <span className="chip-meta">
-                    총 강의시간 {currentLecture.totalDuration}
-                  </span>
-                  <span className="chip-meta">
-                    강의 수 {currentLecture.totalLectures}강
-                  </span>
-                  <span className="chip-meta">
-                    업데이트 2025-01-15
-                  </span>
-                </div>
+            <div className="flex flex-wrap gap-2">
+              <span className="chip-meta">
+                총 강의시간 {currentLecture.totalDuration}
+              </span>
+              <span className="chip-meta">
+                강의 수 {currentLecture.totalLectures}강
+              </span>
+            </div>
               </div>
             </div>
 

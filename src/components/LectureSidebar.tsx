@@ -48,7 +48,17 @@ export const LectureSidebar = ({
           isCompleted && "lecture-completed",
           !isCurrentLecture && !isCompleted && "hover:bg-muted/50"
         )}
-        onClick={() => onLectureSelect(lecture)}
+        onClick={() => onLectureSelect({
+          id: lecture.id,
+          title: lecture.title,
+          subject: "민법 및 민사특별법",
+          section: "핵심개념입문",
+          duration: lecture.duration,
+          videoUrl: lecture.videoUrl,
+          progress: lecture.progress,
+          totalLectures: 3,
+          totalDuration: "01:57:30"
+        })}
       >
         {/* Lecture number */}
         <div className="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
@@ -77,7 +87,23 @@ export const LectureSidebar = ({
         </div>
 
         {/* Play button */}
-        <button className="btn-lecture">
+        <button 
+          className="btn-lecture"
+          onClick={(e) => {
+            e.stopPropagation();
+            onLectureSelect({
+              id: lecture.id,
+              title: lecture.title,
+              subject: "민법 및 민사특별법",
+              section: "핵심개념입문",
+              duration: lecture.duration,
+              videoUrl: lecture.videoUrl,
+              progress: lecture.progress,
+              totalLectures: 3,
+              totalDuration: "01:57:30"
+            });
+          }}
+        >
           <Play className="w-3 h-3 mr-1" />
           {lecture.progress > 0 ? "이어보기" : "재생"}
         </button>
