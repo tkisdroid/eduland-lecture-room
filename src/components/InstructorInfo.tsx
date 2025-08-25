@@ -2,13 +2,7 @@ export const InstructorInfo = () => {
   return (
     <section className="mb-8">
       <div className="edu-card p-6">
-        <div 
-          className="flex items-start gap-4 cursor-pointer hover:bg-muted/30 rounded-lg p-2 -m-2 transition-colors"
-          onClick={() => {
-            // Navigate to instructor's courses
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-        >
+        <div className="flex items-start gap-4">
           {/* Instructor Photo */}
           <div className="flex-shrink-0">
             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">

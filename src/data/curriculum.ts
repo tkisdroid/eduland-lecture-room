@@ -27,7 +27,7 @@ export const curriculumData: Subject[] = [
     sections: [
       {
         id: "핵심개념입문과정",
-        name: "핵심개념입문", 
+        name: "핵심개념입문과정", 
         lectures: [
           {
             id: "1",
@@ -57,7 +57,7 @@ export const curriculumData: Subject[] = [
       },
       {
         id: "기본이론과정",
-        name: "기본이론",
+        name: "기본이론과정",
         lectures: [
           {
             id: "4",
@@ -71,17 +71,17 @@ export const curriculumData: Subject[] = [
       },
       {
         id: "예상문제풀이과정", 
-        name: "예상문제풀이",
+        name: "예상문제풀이과정",
         lectures: []
       },
       {
         id: "모의고사과정",
-        name: "모의고사",
+        name: "모의고사과정", 
         lectures: []
       },
       {
         id: "기출문제풀이과정",
-        name: "기출문제풀이",
+        name: "기출문제풀이과정",
         lectures: []
       }
     ],
@@ -108,27 +108,27 @@ export const curriculumData: Subject[] = [
     sections: [
       {
         id: "핵심개념입문과정_부동산학",
-        name: "핵심개념입문",
+        name: "핵심개념입문과정",
         lectures: []
       },
       {
         id: "기본이론과정_부동산학",
-        name: "기본이론",
+        name: "기본이론과정", 
         lectures: []
       },
       {
         id: "예상문제풀이과정_부동산학",
-        name: "예상문제풀이",
+        name: "예상문제풀이과정",
         lectures: []
       },
       {
         id: "모의고사과정_부동산학",
-        name: "모의고사",
+        name: "모의고사과정",
         lectures: []
       },
       {
         id: "기출문제풀이과정_부동산학",
-        name: "기출문제풀이",
+        name: "기출문제풀이과정", 
         lectures: []
       }
     ],
@@ -146,27 +146,27 @@ export const curriculumData: Subject[] = [
     sections: [
       {
         id: "핵심개념입문과정_공법",
-        name: "핵심개념입문",
+        name: "핵심개념입문과정",
         lectures: []
       },
       {
         id: "기본이론과정_공법", 
-        name: "기본이론",
+        name: "기본이론과정",
         lectures: []
       },
       {
         id: "예상문제풀이과정_공법",
-        name: "예상문제풀이",
+        name: "예상문제풀이과정",
         lectures: []
       },
       {
         id: "모의고사과정_공법",
-        name: "모의고사",
+        name: "모의고사과정",
         lectures: []
       },
       {
         id: "기출문제풀이과정_공법",
-        name: "기출문제풀이",
+        name: "기출문제풀이과정",
         lectures: []
       }
     ]
@@ -177,27 +177,27 @@ export const curriculumData: Subject[] = [
     sections: [
       {
         id: "핵심개념입문과정_중개법령",
-        name: "핵심개념입문",
+        name: "핵심개념입문과정", 
         lectures: []
       },
       {
         id: "기본이론과정_중개법령",
-        name: "기본이론",
+        name: "기본이론과정",
         lectures: []
       },
       {
         id: "예상문제풀이과정_중개법령", 
-        name: "예상문제풀이",
+        name: "예상문제풀이과정",
         lectures: []
       },
       {
         id: "모의고사과정_중개법령",
-        name: "모의고사",
+        name: "모의고사과정",
         lectures: []
       },
       {
         id: "기출문제풀이과정_중개법령",
-        name: "기출문제풀이",
+        name: "기출문제풀이과정",
         lectures: []
       }
     ]
@@ -208,27 +208,27 @@ export const curriculumData: Subject[] = [
     sections: [
       {
         id: "핵심개념입문과정_세법",
-        name: "핵심개념입문",
+        name: "핵심개념입문과정",
         lectures: []
       },
       {
         id: "기본이론과정_세법",
-        name: "기본이론",
+        name: "기본이론과정", 
         lectures: []
       },
       {
         id: "예상문제풀이과정_세법",
-        name: "예상문제풀이",
+        name: "예상문제풀이과정",
         lectures: []
       },
       {
         id: "모의고사과정_세법",
-        name: "모의고사",
+        name: "모의고사과정",
         lectures: []
       },
       {
         id: "기출문제풀이과정_세법",
-        name: "기출문제풀이",
+        name: "기출문제풀이과정",
         lectures: []
       }
     ]
@@ -239,27 +239,27 @@ export const curriculumData: Subject[] = [
     sections: [
       {
         id: "핵심개념입문과정_공시법",
-        name: "핵심개념입문",
+        name: "핵심개념입문과정",
         lectures: []
       },
       {
         id: "기본이론과정_공시법",
-        name: "기본이론",
+        name: "기본이론과정",
         lectures: []
       },
       {
         id: "예상문제풀이과정_공시법",
-        name: "예상문제풀이", 
+        name: "예상문제풀이과정", 
         lectures: []
       },
       {
         id: "모의고사과정_공시법",
-        name: "모의고사",
+        name: "모의고사과정",
         lectures: []
       },
       {
         id: "기출문제풀이과정_공시법",
-        name: "기출문제풀이",
+        name: "기출문제풀이과정",
         lectures: []
       }
     ]
