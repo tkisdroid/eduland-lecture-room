@@ -169,9 +169,11 @@ export const LectureSidebar = ({
                         >
                           <div className="flex items-center gap-2">
                             <span>{section.name}</span>
-                            <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
-                              {section.lectures.length}개
-                            </span>
+                            {section.lectures.length > 0 && (
+                              <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
+                                {section.lectures.length}개
+                              </span>
+                            )}
                           </div>
                           {expandedSections.includes(section.id) ? (
                             <ChevronDown className="w-4 h-4" />
@@ -204,9 +206,11 @@ export const LectureSidebar = ({
                                 >
                                   <div className="flex items-center gap-2">
                                     <span>{specialSection.name}</span>
-                                    <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
-                                      {specialSection.lectures.length}개
-                                    </span>
+                                    {specialSection.lectures.length > 0 && (
+                                      <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
+                                        {specialSection.lectures.length}개
+                                      </span>
+                                    )}
                                   </div>
                                   {expandedSections.includes(specialSection.id) ? (
                                     <ChevronDown className="w-4 h-4" />
@@ -272,9 +276,11 @@ export const LectureSidebar = ({
                         >
                           <div className="flex items-center gap-2">
                             <span>{section.name}</span>
-                            <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
-                              {section.lectures.length}개
-                            </span>
+                            {section.lectures.length > 0 && (
+                              <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
+                                {section.lectures.length}개
+                              </span>
+                            )}
                           </div>
                           {expandedSections.includes(section.id) ? (
                             <ChevronDown className="w-4 h-4" />

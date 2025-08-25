@@ -23,6 +23,15 @@ const Index = () => {
     totalDuration: "01:57:30"
   });
 
+  const [videoKey, setVideoKey] = useState(0); // Force video refresh
+
+  const handleLectureSelect = (lecture: any) => {
+    setCurrentLecture(lecture);
+    setVideoKey(prev => prev + 1); // Force video player to refresh
+    // Scroll to top when selecting a new lecture
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -59,7 +68,7 @@ const Index = () => {
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           currentLecture={currentLecture}
-          onLectureSelect={setCurrentLecture}
+          onLectureSelect={handleLectureSelect}
         />
 
         {/* Main Content */}
@@ -75,6 +84,7 @@ const Index = () => {
                 isScrolled ? 'scale-75' : 'scale-100'
               }`}>
                 <VideoPlayer 
+                  key={videoKey} // Force complete re-render when lecture changes
                   videoUrl={currentLecture.videoUrl}
                   title={currentLecture.title}
                   progress={currentLecture.progress}
