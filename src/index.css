@@ -2,40 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Eduland 공인중개사 강의실 Design System */
 
 @layer base {
   :root {
+    /* Core colors for Korean education platform */
+    --bg: 0 0% 100%;
+    --text: 216 12% 6%;
+    --muted: 215 14% 38%;
+    --border: 210 16% 91%;
+    --accent: 145 63% 32%;
+    --accent-weak: 144 41% 91%;
+    --danger: 0 73% 58%;
+    
+    /* Progress and completion states */
+    --progress-track: 210 17% 94%;
+    --progress-fill: 145 63% 32%;
+    --watched-bg: 144 41% 96%;
+    --watched-text: 145 49% 26%;
+    
+    /* Shadows for cards and elevation */
+    --card-shadow: 0 4px 14px rgb(0 0 0 / 0.06);
+    --card-shadow-hover: 0 10px 28px rgb(0 0 0 / 0.10);
+    
+    /* Legacy shadcn tokens for compatibility */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    --foreground: 216 12% 6%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 216 12% 6%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
+    --popover-foreground: 216 12% 6%;
+    --primary: 145 63% 32%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 210 17% 94%;
+    --secondary-foreground: 216 12% 6%;
+    --muted: 210 17% 94%;
+    --muted-foreground: 215 14% 38%;
+    --accent: 145 63% 32%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 73% 58%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 210 16% 91%;
+    --input: 210 16% 91%;
+    --ring: 145 63% 32%;
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
@@ -101,5 +110,75 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    line-height: 1.5;
+  }
+}
+
+@layer components {
+  /* Video player with YouTube branding masks */
+  .player-wrap {
+    @apply relative overflow-hidden rounded-lg;
+  }
+  
+  .yt-mask {
+    @apply absolute z-10;
+    background: #000;
+    pointer-events: none;
+  }
+  
+  .yt-mask.top {
+    top: 0;
+    right: 0;
+    width: min(10vw, 80px);
+    height: min(10vw, 80px);
+  }
+  
+  .yt-mask.bottom {
+    bottom: 0;
+    right: 0;
+    width: min(14vw, 96px);
+    height: min(14vw, 96px);
+  }
+
+  /* Korean education platform cards */
+  .edu-card {
+    @apply bg-card rounded-lg border border-border overflow-hidden;
+    box-shadow: var(--card-shadow);
+    transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .edu-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-1px);
+  }
+
+  /* Progress bars for lectures */
+  .progress-bar {
+    @apply w-full bg-slate-100 rounded-full h-2;
+    background-color: hsl(var(--progress-track));
+  }
+  
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-300;
+    background-color: hsl(var(--progress-fill));
+  }
+
+  /* Completed lecture rows */
+  .lecture-completed {
+    background-color: hsl(var(--watched-bg));
+    color: hsl(var(--watched-text));
+  }
+
+  /* Custom Korean education UI variants */
+  .btn-lecture {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+    @apply h-8 px-3 text-xs;
+  }
+
+  .chip-meta {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    @apply bg-secondary text-secondary-foreground;
   }
 }
