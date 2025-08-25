@@ -77,20 +77,16 @@ const Index = () => {
             {/* Video Player Section */}
             <div className={`mb-8 transition-all duration-300 ${
               isScrolled 
-                ? 'fixed top-20 right-6 z-50 w-80 shadow-2xl rounded-lg' 
+                ? 'fixed top-20 right-6 z-50 w-80 md:w-96 lg:w-[420px] xl:w-[480px] shadow-2xl rounded-lg' 
                 : 'relative w-full'
             }`}>
-              <div className={`transition-all duration-300 ${
-                isScrolled ? 'scale-75' : 'scale-100'
-              }`}>
-                <VideoPlayer 
-                  key={videoKey} // Force complete re-render when lecture changes
-                  videoUrl={currentLecture.videoUrl}
-                  title={currentLecture.title}
-                  progress={currentLecture.progress}
-                  compact={isScrolled}
-                />
-              </div>
+              <VideoPlayer 
+                key={videoKey} // Force complete re-render when lecture changes
+                videoUrl={currentLecture.videoUrl}
+                title={currentLecture.title}
+                progress={currentLecture.progress}
+                compact={isScrolled}
+              />
               
               {/* Video Meta Info - Hide when scrolled */}
               {!isScrolled && (
