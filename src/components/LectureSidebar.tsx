@@ -131,90 +131,154 @@ export const LectureSidebar = ({
 
         {/* Curriculum Navigation */}
         <div className="p-4">
-          {curriculumData.map(subject => (
-            <div key={subject.id} className="mb-4">
-              {/* Subject Header */}
-              <button
-                onClick={() => toggleSubject(subject.id)}
-                className="w-full flex items-center justify-between p-2 text-sm font-medium text-left hover:bg-muted/50 rounded-lg"
-              >
-                <span>{subject.name}</span>
-                {expandedSubjects.includes(subject.id) ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronRight className="w-4 h-4" />
-                )}
-              </button>
+          {/* 1차 시험과목 */}
+          <div className="mb-6">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 px-2">
+              1차 시험과목
+            </h3>
+            {curriculumData.slice(0, 2).map(subject => (
+              <div key={subject.id} className="mb-3">
+                {/* Subject Header */}
+                <button
+                  onClick={() => toggleSubject(subject.id)}
+                  className="w-full flex items-center justify-between p-2 text-base font-semibold text-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                >
+                  <span>{subject.name}</span>
+                  {expandedSubjects.includes(subject.id) ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
+                  )}
+                </button>
 
-              {/* Sections */}
-              {expandedSubjects.includes(subject.id) && (
-                <div className="mt-2 space-y-1">
-                  {subject.sections.map(section => (
-                    <div key={section.id}>
-                      {/* Section Header */}
-                      <button
-                        onClick={() => toggleSection(section.id)}
-                        className="w-full flex items-center justify-between p-2 pl-6 text-sm text-left hover:bg-muted/50 rounded-lg"
-                      >
-                        <span>{section.name}</span>
-                        {expandedSections.includes(section.id) ? (
-                          <ChevronDown className="w-4 h-4" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4" />
-                        )}
-                      </button>
-
-                      {/* Lectures */}
-              {expandedSections.includes(section.id) && (
-                        <div className="mt-2 pl-8 space-y-2">
-                          {section.lectures.length > 0 ? (
-                            section.lectures.map(renderLecture)
+                {/* Sections */}
+                {expandedSubjects.includes(subject.id) && (
+                  <div className="mt-2 space-y-1">
+                    {subject.sections.map(section => (
+                      <div key={section.id}>
+                        {/* Section Header */}
+                        <button
+                          onClick={() => toggleSection(section.id)}
+                          className="w-full flex items-center justify-between p-2 pl-6 text-sm font-medium text-muted-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                        >
+                          <span>{section.name}</span>
+                          {expandedSections.includes(section.id) ? (
+                            <ChevronDown className="w-4 h-4" />
                           ) : (
-                            <div className="p-3 text-sm text-muted-foreground text-center">
-                              강의가 준비 중입니다.
-                            </div>
+                            <ChevronRight className="w-4 h-4" />
                           )}
-                        </div>
-                      )}
+                        </button>
 
-                      {/* Special sections after 기출문제풀이과정 */}
-                      {section.id === "기출문제풀이과정" && subject.specialSections && (
-                        <div className="mt-2 space-y-1">
-                          {subject.specialSections.map(specialSection => (
-                            <div key={specialSection.id}>
-                              <button
-                                onClick={() => toggleSection(specialSection.id)}
-                                className="w-full flex items-center justify-between p-2 pl-6 text-sm text-left hover:bg-muted/50 rounded-lg"
-                              >
-                                <span>{specialSection.name}</span>
-                                {expandedSections.includes(specialSection.id) ? (
-                                  <ChevronDown className="w-4 h-4" />
-                                ) : (
-                                  <ChevronRight className="w-4 h-4" />
-                                )}
-                              </button>
-                              
-                              {expandedSections.includes(specialSection.id) && (
-                                <div className="mt-2 pl-8 space-y-2">
-                                  {specialSection.lectures.length > 0 ? (
-                                    specialSection.lectures.map(renderLecture)
+                        {/* Lectures */}
+                        {expandedSections.includes(section.id) && (
+                          <div className="mt-2 pl-8 space-y-2">
+                            {section.lectures.length > 0 ? (
+                              section.lectures.map(renderLecture)
+                            ) : (
+                              <div className="p-3 text-sm text-muted-foreground text-center">
+                                강의가 준비 중입니다.
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Special sections after 기출문제풀이과정 */}
+                        {section.id === "기출문제풀이과정" && subject.specialSections && (
+                          <div className="mt-2 space-y-1">
+                            {subject.specialSections.map(specialSection => (
+                              <div key={specialSection.id}>
+                                <button
+                                  onClick={() => toggleSection(specialSection.id)}
+                                  className="w-full flex items-center justify-between p-2 pl-6 text-sm font-medium text-muted-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                                >
+                                  <span>{specialSection.name}</span>
+                                  {expandedSections.includes(specialSection.id) ? (
+                                    <ChevronDown className="w-4 h-4" />
                                   ) : (
-                                    <div className="p-3 text-sm text-muted-foreground text-center">
-                                      강의가 준비 중입니다.
-                                    </div>
+                                    <ChevronRight className="w-4 h-4" />
                                   )}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+                                </button>
+                                
+                                {expandedSections.includes(specialSection.id) && (
+                                  <div className="mt-2 pl-8 space-y-2">
+                                    {specialSection.lectures.length > 0 ? (
+                                      specialSection.lectures.map(renderLecture)
+                                    ) : (
+                                      <div className="p-3 text-sm text-muted-foreground text-center">
+                                        강의가 준비 중입니다.
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* 2차 시험과목 */}
+          <div className="mb-6">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 px-2">
+              2차 시험과목
+            </h3>
+            {curriculumData.slice(2).map(subject => (
+              <div key={subject.id} className="mb-3">
+                {/* Subject Header */}
+                <button
+                  onClick={() => toggleSubject(subject.id)}
+                  className="w-full flex items-center justify-between p-2 text-base font-semibold text-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                >
+                  <span>{subject.name}</span>
+                  {expandedSubjects.includes(subject.id) ? (
+                    <ChevronDown className="w-4 h-4" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4" />
+                  )}
+                </button>
+
+                {/* Sections */}
+                {expandedSubjects.includes(subject.id) && (
+                  <div className="mt-2 space-y-1">
+                    {subject.sections.map(section => (
+                      <div key={section.id}>
+                        {/* Section Header */}
+                        <button
+                          onClick={() => toggleSection(section.id)}
+                          className="w-full flex items-center justify-between p-2 pl-6 text-sm font-medium text-muted-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                        >
+                          <span>{section.name}</span>
+                          {expandedSections.includes(section.id) ? (
+                            <ChevronDown className="w-4 h-4" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4" />
+                          )}
+                        </button>
+
+                        {/* Lectures */}
+                        {expandedSections.includes(section.id) && (
+                          <div className="mt-2 pl-8 space-y-2">
+                            {section.lectures.length > 0 ? (
+                              section.lectures.map(renderLecture)
+                            ) : (
+                              <div className="p-3 text-sm text-muted-foreground text-center">
+                                강의가 준비 중입니다.
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </aside>
     </>

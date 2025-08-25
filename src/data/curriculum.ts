@@ -234,8 +234,8 @@ export const curriculumData: Subject[] = [
     ]
   },
   {
-    id: "부동산 공시법",
-    name: "부동산 공시법",
+    id: "부동산공시법",
+    name: "부동산공시법",
     sections: [
       {
         id: "핵심개념입문과정_공시법",
