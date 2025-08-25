@@ -44,9 +44,9 @@ export const LectureSidebar = ({
         key={lecture.id}
         className={cn(
           "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200",
-          isCurrentLecture && "bg-sidebar-navy-light border-l-3 border-accent text-sidebar-text-primary",
-          isCompleted && "bg-sidebar-hover",
-          !isCurrentLecture && !isCompleted && "hover:bg-sidebar-hover text-sidebar-text-muted hover:text-sidebar-text-secondary"
+          isCurrentLecture && "bg-sidebar-navy-light text-sidebar-text-primary font-medium border-l-4 border-accent",
+          isCompleted && "bg-sidebar-hover text-sidebar-text-secondary",
+          !isCurrentLecture && !isCompleted && "text-sidebar-text-muted hover:bg-sidebar-hover hover:text-sidebar-text-primary"
         )}
         onClick={() => onLectureSelect({
           id: lecture.id,
