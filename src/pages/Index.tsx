@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LectureSidebar } from "@/components/LectureSidebar";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { LectureHeader } from "@/components/LectureHeader";
@@ -9,6 +9,7 @@ import { Menu, X } from "lucide-react";
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [currentLecture, setCurrentLecture] = useState({
     id: "1",
     title: "소유권과 점유권의 기본 개념",
@@ -21,6 +22,16 @@ const Index = () => {
     totalLectures: 3,
     totalDuration: "01:57:30"
   });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      setIsScrolled(scrollTop > 200);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -54,29 +65,42 @@ const Index = () => {
         {/* Main Content */}
         <main className="flex-1 lg:ml-[336px]">
           <div className="max-w-[1280px] mx-auto px-4 py-6">
-            {/* Video Player Section - Sticky when scrolling */}
-            <div className="mb-8 sticky top-20 z-20 bg-background shadow-sm rounded-lg">
-              <VideoPlayer 
-                videoUrl={currentLecture.videoUrl}
-                title={currentLecture.title}
-                progress={currentLecture.progress}
-              />
-              
-              {/* Video Meta Info */}
-              <div className="mt-4">
-                <h1 className="text-2xl font-bold text-foreground mb-3">
-                  {currentLecture.title}
-                </h1>
-                <div className="flex flex-wrap gap-2">
-                  <span className="chip-meta">
-                    총 강의시간 {currentLecture.totalDuration}
-                  </span>
-                  <span className="chip-meta">
-                    강의 수 {currentLecture.totalLectures}강
-                  </span>
-                </div>
+            {/* Video Player Section */}
+            <div className={`mb-8 transition-all duration-300 ${
+              isScrolled 
+                ? 'fixed top-20 right-6 z-50 w-80 shadow-2xl rounded-lg' 
+                : 'relative w-full'
+            }`}>
+              <div className={`transition-all duration-300 ${
+                isScrolled ? 'scale-75' : 'scale-100'
+              }`}>
+                <VideoPlayer 
+                  videoUrl={currentLecture.videoUrl}
+                  title={currentLecture.title}
+                  progress={currentLecture.progress}
+                />
               </div>
+              
+              {/* Video Meta Info - Hide when scrolled */}
+              {!isScrolled && (
+                <div className="mt-4 animate-fade-in">
+                  <h1 className="text-2xl font-bold text-foreground mb-3">
+                    {currentLecture.title}
+                  </h1>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="chip-meta">
+                      총 강의시간 {currentLecture.totalDuration}
+                    </span>
+                    <span className="chip-meta">
+                      강의 수 {currentLecture.totalLectures}강
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Placeholder to maintain layout when video is fixed */}
+            {isScrolled && <div className="mb-8 h-96"></div>}
 
             {/* Tabs Section */}
             <LectureTabs />
