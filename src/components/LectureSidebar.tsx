@@ -22,16 +22,18 @@ export const LectureSidebar = ({
   const toggleSubject = (subjectId: string) => {
     setExpandedSubjects(prev => 
       prev.includes(subjectId) 
-        ? prev.filter(id => id !== subjectId)
-        : [...prev, subjectId]
+        ? [] // 클릭한 과목이 이미 열려있으면 모두 접기
+        : [subjectId] // 클릭한 과목만 열고 나머지는 접기
     );
+    // 과목이 바뀌면 섹션도 초기화
+    setExpandedSections([]);
   };
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => 
       prev.includes(sectionId)
-        ? prev.filter(id => id !== sectionId) 
-        : [...prev, sectionId]
+        ? [] // 클릭한 섹션이 이미 열려있으면 모두 접기
+        : [sectionId] // 클릭한 섹션만 열고 나머지는 접기
     );
   };
 
@@ -157,7 +159,7 @@ export const LectureSidebar = ({
 
                 {/* Sections */}
                 {expandedSubjects.includes(subject.id) && (
-                  <div className="mt-3 ml-4 space-y-2">
+                  <div className="mt-3 ml-4 space-y-2 animate-fade-in">
                     {subject.sections.map(section => (
                       <div key={section.id}>
                         {/* Section Header */}
@@ -175,7 +177,7 @@ export const LectureSidebar = ({
 
                         {/* Lectures */}
                         {expandedSections.includes(section.id) && (
-                          <div className="mt-2 ml-4 space-y-1">
+                          <div className="mt-2 ml-4 space-y-1 animate-fade-in">
                             {section.lectures.length > 0 ? (
                               section.lectures.map(renderLecture)
                             ) : (
@@ -204,7 +206,7 @@ export const LectureSidebar = ({
                                 </button>
                                 
                                 {expandedSections.includes(specialSection.id) && (
-                                  <div className="mt-2 ml-4 space-y-1">
+                                  <div className="mt-2 ml-4 space-y-1 animate-fade-in">
                                     {specialSection.lectures.length > 0 ? (
                                       specialSection.lectures.map(renderLecture)
                                     ) : (
@@ -250,7 +252,7 @@ export const LectureSidebar = ({
 
                 {/* Sections */}
                 {expandedSubjects.includes(subject.id) && (
-                  <div className="mt-3 ml-4 space-y-2">
+                  <div className="mt-3 ml-4 space-y-2 animate-fade-in">
                     {subject.sections.map(section => (
                       <div key={section.id}>
                         {/* Section Header */}
@@ -268,7 +270,7 @@ export const LectureSidebar = ({
 
                         {/* Lectures */}
                         {expandedSections.includes(section.id) && (
-                          <div className="mt-2 ml-4 space-y-1">
+                          <div className="mt-2 ml-4 space-y-1 animate-fade-in">
                             {section.lectures.length > 0 ? (
                               section.lectures.map(renderLecture)
                             ) : (
