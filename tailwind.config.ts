@@ -27,6 +27,14 @@ export default {
 				'accent-weak': 'hsl(var(--accent-weak))',
 				danger: 'hsl(var(--danger))',
 				
+				// Sidebar colors
+				'sidebar-navy': 'hsl(var(--sidebar-navy))',
+				'sidebar-navy-light': 'hsl(var(--sidebar-navy-light))',
+				'sidebar-text-primary': 'hsl(var(--sidebar-text-primary))',
+				'sidebar-text-secondary': 'hsl(var(--sidebar-text-secondary))',
+				'sidebar-text-muted': 'hsl(var(--sidebar-text-muted))',
+				'sidebar-hover': 'hsl(var(--sidebar-hover))',
+				
 				// Progress and completion
 				'progress-track': 'hsl(var(--progress-track))',
 				'progress-fill': 'hsl(var(--progress-fill))',

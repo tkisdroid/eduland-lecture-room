@@ -15,6 +15,14 @@
     --accent-weak: 144 41% 91%;
     --danger: 0 73% 58%;
     
+    /* Sidebar colors matching the design */
+    --sidebar-navy: 224 64% 14%;
+    --sidebar-navy-light: 224 54% 24%;
+    --sidebar-text-primary: 0 0% 100%;
+    --sidebar-text-secondary: 220 25% 85%;
+    --sidebar-text-muted: 220 15% 65%;
+    --sidebar-hover: 224 54% 18%;
+    
     /* Progress and completion states */
     --progress-track: 210 17% 94%;
     --progress-fill: 145 63% 32%;

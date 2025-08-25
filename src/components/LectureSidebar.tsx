@@ -43,10 +43,10 @@ export const LectureSidebar = ({
       <div 
         key={lecture.id}
         className={cn(
-          "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors",
-          isCurrentLecture && "bg-accent-weak border border-accent/20",
-          isCompleted && "lecture-completed",
-          !isCurrentLecture && !isCompleted && "hover:bg-muted/50"
+          "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200",
+          isCurrentLecture && "bg-sidebar-navy-light border-l-3 border-accent text-sidebar-text-primary",
+          isCompleted && "bg-sidebar-hover",
+          !isCurrentLecture && !isCompleted && "hover:bg-sidebar-hover text-sidebar-text-muted hover:text-sidebar-text-secondary"
         )}
         onClick={() => onLectureSelect({
           id: lecture.id,
@@ -62,26 +62,26 @@ export const LectureSidebar = ({
         })}
       >
         {/* Lecture number */}
-        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-sidebar-navy-light flex items-center justify-center text-xs font-medium">
           {isCompleted ? (
             <Check className="w-3 h-3 text-accent" />
           ) : (
-            lecture.number
+            <span className="text-sidebar-text-secondary">{lecture.number}</span>
           )}
         </div>
 
         {/* Lecture info */}
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-medium truncate">{lecture.title}</h4>
+          <h4 className="text-sm font-medium truncate leading-relaxed">{lecture.title}</h4>
           <div className="flex items-center justify-between mt-1">
-            <span className="text-xs text-muted-foreground">{lecture.duration}</span>
-            <span className="text-xs text-muted-foreground">{lecture.progress}%</span>
+            <span className="text-xs text-sidebar-text-muted">{lecture.duration}</span>
+            <span className="text-xs text-sidebar-text-muted">{lecture.progress}%</span>
           </div>
           
           {/* Progress bar */}
-          <div className="progress-bar mt-2">
+          <div className="w-full bg-sidebar-navy-light rounded-full h-1.5 mt-2 overflow-hidden">
             <div 
-              className="progress-fill" 
+              className="h-full bg-accent transition-all duration-300 rounded-full"
               style={{ width: `${lecture.progress}%` }}
             />
           </div>
@@ -89,7 +89,7 @@ export const LectureSidebar = ({
 
         {/* Play button */}
         <button 
-          className="btn-lecture"
+          className="px-2.5 py-1.5 bg-accent text-accent-foreground text-xs font-medium rounded-md hover:bg-accent/90 transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             onLectureSelect({
@@ -106,7 +106,7 @@ export const LectureSidebar = ({
             });
           }}
         >
-          <Play className="w-3 h-3 mr-1" />
+          <Play className="w-3 h-3 mr-1 inline" />
           {lecture.progress > 0 ? "이어보기" : "재생"}
         </button>
       </div>
@@ -117,51 +117,53 @@ export const LectureSidebar = ({
     <>
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-14 left-0 z-40 w-[336px] h-[calc(100vh-3.5rem)] bg-white border-r border-border overflow-y-auto transition-transform lg:translate-x-0",
+        "fixed top-14 left-0 z-40 w-[336px] h-[calc(100vh-3.5rem)] bg-sidebar-navy overflow-y-auto transition-transform lg:translate-x-0",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-lg font-semibold">나의 강의실</h2>
+        <div className="flex items-center justify-between p-6 border-b border-sidebar-navy-light">
+          <h2 className="text-xl font-bold text-sidebar-text-primary">나의 강의실</h2>
           <button 
             onClick={onClose}
-            className="lg:hidden p-1 text-muted-foreground hover:text-foreground"
+            className="lg:hidden p-1 text-sidebar-text-secondary hover:text-sidebar-text-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Curriculum Navigation */}
-        <div className="p-4">
+        <div className="p-6">
           {/* 1차 시험과목 */}
-          <div className="mb-6">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 px-2">
-              1차 시험과목
-            </h3>
+          <div className="mb-8">
+            <div className="mb-4 pb-2 border-b border-sidebar-navy-light">
+              <h3 className="text-sm font-semibold text-sidebar-text-secondary uppercase tracking-wider">
+                1차 시험과목
+              </h3>
+            </div>
             {curriculumData.slice(0, 2).map(subject => (
-              <div key={subject.id} className="mb-3">
+              <div key={subject.id} className="mb-4">
                 {/* Subject Header */}
                 <button
                   onClick={() => toggleSubject(subject.id)}
-                  className="w-full flex items-center justify-between p-2 text-base font-semibold text-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-between p-3 text-base font-bold text-sidebar-text-primary hover:bg-sidebar-hover rounded-lg transition-colors"
                 >
                   <span>{subject.name}</span>
                   {expandedSubjects.includes(subject.id) ? (
-                    <ChevronDown className="w-4 h-4" />
+                    <ChevronDown className="w-4 h-4 text-sidebar-text-secondary" />
                   ) : (
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-4 h-4 text-sidebar-text-secondary" />
                   )}
                 </button>
 
                 {/* Sections */}
                 {expandedSubjects.includes(subject.id) && (
-                  <div className="mt-2 space-y-1">
+                  <div className="mt-3 ml-4 space-y-2">
                     {subject.sections.map(section => (
                       <div key={section.id}>
                         {/* Section Header */}
                         <button
                           onClick={() => toggleSection(section.id)}
-                          className="w-full flex items-center justify-between p-2 pl-6 text-sm font-medium text-muted-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                          className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
                         >
                           <span>{section.name}</span>
                           {expandedSections.includes(section.id) ? (
@@ -173,11 +175,11 @@ export const LectureSidebar = ({
 
                         {/* Lectures */}
                         {expandedSections.includes(section.id) && (
-                          <div className="mt-2 pl-8 space-y-2">
+                          <div className="mt-2 ml-4 space-y-1">
                             {section.lectures.length > 0 ? (
                               section.lectures.map(renderLecture)
                             ) : (
-                              <div className="p-3 text-sm text-muted-foreground text-center">
+                              <div className="p-3 text-sm text-sidebar-text-muted text-center">
                                 강의가 준비 중입니다.
                               </div>
                             )}
@@ -186,12 +188,12 @@ export const LectureSidebar = ({
 
                         {/* Special sections after 기출문제풀이과정 */}
                         {section.id === "기출문제풀이과정" && subject.specialSections && (
-                          <div className="mt-2 space-y-1">
+                          <div className="mt-2 space-y-2">
                             {subject.specialSections.map(specialSection => (
                               <div key={specialSection.id}>
                                 <button
                                   onClick={() => toggleSection(specialSection.id)}
-                                  className="w-full flex items-center justify-between p-2 pl-6 text-sm font-medium text-muted-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                                  className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
                                 >
                                   <span>{specialSection.name}</span>
                                   {expandedSections.includes(specialSection.id) ? (
@@ -202,11 +204,11 @@ export const LectureSidebar = ({
                                 </button>
                                 
                                 {expandedSections.includes(specialSection.id) && (
-                                  <div className="mt-2 pl-8 space-y-2">
+                                  <div className="mt-2 ml-4 space-y-1">
                                     {specialSection.lectures.length > 0 ? (
                                       specialSection.lectures.map(renderLecture)
                                     ) : (
-                                      <div className="p-3 text-sm text-muted-foreground text-center">
+                                      <div className="p-3 text-sm text-sidebar-text-muted text-center">
                                         강의가 준비 중입니다.
                                       </div>
                                     )}
@@ -226,33 +228,35 @@ export const LectureSidebar = ({
 
           {/* 2차 시험과목 */}
           <div className="mb-6">
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 px-2">
-              2차 시험과목
-            </h3>
+            <div className="mb-4 pb-2 border-b border-sidebar-navy-light">
+              <h3 className="text-sm font-semibold text-sidebar-text-secondary uppercase tracking-wider">
+                2차 시험과목
+              </h3>
+            </div>
             {curriculumData.slice(2).map(subject => (
-              <div key={subject.id} className="mb-3">
+              <div key={subject.id} className="mb-4">
                 {/* Subject Header */}
                 <button
                   onClick={() => toggleSubject(subject.id)}
-                  className="w-full flex items-center justify-between p-2 text-base font-semibold text-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                  className="w-full flex items-center justify-between p-3 text-base font-bold text-sidebar-text-primary hover:bg-sidebar-hover rounded-lg transition-colors"
                 >
                   <span>{subject.name}</span>
                   {expandedSubjects.includes(subject.id) ? (
-                    <ChevronDown className="w-4 h-4" />
+                    <ChevronDown className="w-4 h-4 text-sidebar-text-secondary" />
                   ) : (
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-4 h-4 text-sidebar-text-secondary" />
                   )}
                 </button>
 
                 {/* Sections */}
                 {expandedSubjects.includes(subject.id) && (
-                  <div className="mt-2 space-y-1">
+                  <div className="mt-3 ml-4 space-y-2">
                     {subject.sections.map(section => (
                       <div key={section.id}>
                         {/* Section Header */}
                         <button
                           onClick={() => toggleSection(section.id)}
-                          className="w-full flex items-center justify-between p-2 pl-6 text-sm font-medium text-muted-foreground hover:bg-muted/50 rounded-lg transition-colors"
+                          className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
                         >
                           <span>{section.name}</span>
                           {expandedSections.includes(section.id) ? (
@@ -264,11 +268,11 @@ export const LectureSidebar = ({
 
                         {/* Lectures */}
                         {expandedSections.includes(section.id) && (
-                          <div className="mt-2 pl-8 space-y-2">
+                          <div className="mt-2 ml-4 space-y-1">
                             {section.lectures.length > 0 ? (
                               section.lectures.map(renderLecture)
                             ) : (
-                              <div className="p-3 text-sm text-muted-foreground text-center">
+                              <div className="p-3 text-sm text-sidebar-text-muted text-center">
                                 강의가 준비 중입니다.
                               </div>
                             )}
