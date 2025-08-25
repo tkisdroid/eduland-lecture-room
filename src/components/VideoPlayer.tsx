@@ -5,9 +5,10 @@ interface VideoPlayerProps {
   videoUrl: string;
   title: string;
   progress: number;
+  compact?: boolean;
 }
 
-export const VideoPlayer = ({ videoUrl, title, progress }: VideoPlayerProps) => {
+export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState("15:30");
   const [totalTime, setTotalTime] = useState("36:30");
@@ -62,68 +63,70 @@ export const VideoPlayer = ({ videoUrl, title, progress }: VideoPlayerProps) => 
         />
       </div>
 
-      {/* Custom Control Bar */}
-      <div className="bg-card border border-border rounded-lg p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button 
-              className="p-2 hover:bg-muted rounded-lg transition-colors"
-              onClick={handleSkipBack}
-            >
-              <SkipBack className="w-5 h-5" />
-            </button>
-            <button 
-              className="p-2 hover:bg-muted rounded-lg transition-colors"
-              onClick={handlePlayPause}
-            >
-              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-            </button>
-            <button 
-              className="p-2 hover:bg-muted rounded-lg transition-colors"
-              onClick={handleSkipForward}
-            >
-              <SkipForward className="w-5 h-5" />
-            </button>
-            <span className="text-sm text-muted-foreground">
-              {currentTime} / {totalTime}
-            </span>
+      {/* Custom Control Bar - Hide in compact mode */}
+      {!compact && (
+        <div className="bg-card border border-border rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button 
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                onClick={handleSkipBack}
+              >
+                <SkipBack className="w-5 h-5" />
+              </button>
+              <button 
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                onClick={handlePlayPause}
+              >
+                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              </button>
+              <button 
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                onClick={handleSkipForward}
+              >
+                <SkipForward className="w-5 h-5" />
+              </button>
+              <span className="text-sm text-muted-foreground">
+                {currentTime} / {totalTime}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Playback Rate */}
+              <select 
+                value={playbackRate}
+                onChange={(e) => handlePlaybackRateChange(Number(e.target.value))}
+                className="text-sm bg-muted border border-border rounded px-2 py-1 cursor-pointer"
+              >
+                <option value={0.5}>0.5x</option>
+                <option value={0.75}>0.75x</option>
+                <option value={1}>표준</option>
+                <option value={1.25}>1.25x</option>
+                <option value={1.5}>1.5x</option>
+                <option value={2}>2x</option>
+              </select>
+
+              <button className="p-2 hover:bg-muted rounded-lg">
+                <Settings className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Playback Rate */}
-            <select 
-              value={playbackRate}
-              onChange={(e) => handlePlaybackRateChange(Number(e.target.value))}
-              className="text-sm bg-muted border border-border rounded px-2 py-1 cursor-pointer"
-            >
-              <option value={0.5}>0.5x</option>
-              <option value={0.75}>0.75x</option>
-              <option value={1}>표준</option>
-              <option value={1.25}>1.25x</option>
-              <option value={1.5}>1.5x</option>
-              <option value={2}>2x</option>
-            </select>
-
-            <button className="p-2 hover:bg-muted rounded-lg">
-              <Settings className="w-5 h-5" />
-            </button>
+          {/* Progress Bar */}
+          <div className="mt-3">
+            <div className="progress-bar">
+              <div 
+                className="progress-fill" 
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-center mt-1">
+              <span className="text-xs text-muted-foreground">진도율 {progress}%</span>
+              <span className="chip-meta">이어보기 가능</span>
+            </div>
           </div>
         </div>
-
-        {/* Progress Bar */}
-        <div className="mt-3">
-          <div className="progress-bar">
-            <div 
-              className="progress-fill" 
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <div className="flex justify-between items-center mt-1">
-            <span className="text-xs text-muted-foreground">진도율 {progress}%</span>
-            <span className="chip-meta">이어보기 가능</span>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

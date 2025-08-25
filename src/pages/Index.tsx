@@ -78,6 +78,7 @@ const Index = () => {
                   videoUrl={currentLecture.videoUrl}
                   title={currentLecture.title}
                   progress={currentLecture.progress}
+                  compact={isScrolled}
                 />
               </div>
               
