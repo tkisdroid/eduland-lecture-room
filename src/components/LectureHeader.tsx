@@ -3,16 +3,18 @@ import { Menu } from "lucide-react";
 interface LectureHeaderProps {
   title: string;
   subject: string;
+  section: string;
+  lectureNumber: number;
   totalLectures: number;
-  totalDuration: string;
   onMenuClick: () => void;
 }
 
 export const LectureHeader = ({ 
   title, 
   subject, 
+  section,
+  lectureNumber,
   totalLectures, 
-  totalDuration, 
   onMenuClick 
 }: LectureHeaderProps) => {
   return (
@@ -35,11 +37,11 @@ export const LectureHeader = ({
             <div className="hidden sm:flex items-center gap-3 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <span className="w-1 h-1 bg-muted-foreground rounded-full"></span>
-                총 강의시간 {totalDuration}
+                {section} 제{lectureNumber}강
               </span>
               <span className="flex items-center gap-1">
                 <span className="w-1 h-1 bg-muted-foreground rounded-full"></span>
-                강의 수 {totalLectures}강
+                총 {totalLectures}강
               </span>
             </div>
           </div>

@@ -13,7 +13,8 @@ const Index = () => {
     id: "1",
     title: "소유권과 점유권의 기본 개념",
     subject: "민법 및 민사특별법",
-    section: "핵심개념입문과정", 
+    section: "핵심개념입문", 
+    lectureNumber: 1,
     duration: "36:30",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     progress: 45,
@@ -35,8 +36,9 @@ const Index = () => {
       <LectureHeader 
         title={currentLecture.title}
         subject={currentLecture.subject}
+        section={currentLecture.section}
+        lectureNumber={currentLecture.lectureNumber}
         totalLectures={currentLecture.totalLectures}
-        totalDuration={currentLecture.totalDuration}
         onMenuClick={() => setSidebarOpen(true)}
       />
 

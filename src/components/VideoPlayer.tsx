@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Play, SkipBack, SkipForward, Settings } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Play, Pause, SkipBack, SkipForward, Settings } from "lucide-react";
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -12,48 +12,69 @@ export const VideoPlayer = ({ videoUrl, title, progress }: VideoPlayerProps) => 
   const [currentTime, setCurrentTime] = useState("15:30");
   const [totalTime, setTotalTime] = useState("36:30");
   const [playbackRate, setPlaybackRate] = useState(1);
+  const playerRef = useRef<any>(null);
+  
+  useEffect(() => {
+    // Load YouTube IFrame API
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
+    // Initialize player when API is ready
+    (window as any).onYouTubeIframeAPIReady = () => {
+      const videoId = videoUrl.split('/').pop() || videoUrl.split('v=')[1]?.split('&')[0];
+      playerRef.current = new (window as any).YT.Player('youtube-player', {
+        videoId: videoId,
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    };
+  }, [videoUrl]);
+
+  const onPlayerReady = (event: any) => {
+    // Player is ready
+  };
+
+  const onPlayerStateChange = (event: any) => {
+    if (event.data === (window as any).YT.PlayerState.PLAYING) {
+      setIsPlaying(true);
+    } else if (event.data === (window as any).YT.PlayerState.PAUSED) {
+      setIsPlaying(false);
+    }
+  };
   
   // Custom video controls
   const handlePlayPause = () => {
-    const iframe = document.querySelector('iframe');
-    if (iframe) {
-      // Send postMessage to control YouTube player
-      iframe.contentWindow?.postMessage(
-        '{"event":"command","func":"' + (isPlaying ? 'pauseVideo' : 'playVideo') + '","args":""}',
-        '*'
-      );
-      setIsPlaying(!isPlaying);
+    if (playerRef.current) {
+      if (isPlaying) {
+        playerRef.current.pauseVideo();
+      } else {
+        playerRef.current.playVideo();
+      }
     }
   };
 
   const handleSkipBack = () => {
-    const iframe = document.querySelector('iframe');
-    if (iframe) {
-      iframe.contentWindow?.postMessage(
-        '{"event":"command","func":"seekTo","args":[' + Math.max(0, 15 * 30 - 10) + ', true]}',
-        '*'
-      );
+    if (playerRef.current) {
+      const currentTime = playerRef.current.getCurrentTime();
+      playerRef.current.seekTo(Math.max(0, currentTime - 10), true);
     }
   };
 
   const handleSkipForward = () => {
-    const iframe = document.querySelector('iframe');
-    if (iframe) {
-      iframe.contentWindow?.postMessage(
-        '{"event":"command","func":"seekTo","args":[' + (15 * 30 + 10) + ', true]}',
-        '*'
-      );
+    if (playerRef.current) {
+      const currentTime = playerRef.current.getCurrentTime();
+      playerRef.current.seekTo(currentTime + 10, true);
     }
   };
 
   const handlePlaybackRateChange = (rate: number) => {
     setPlaybackRate(rate);
-    const iframe = document.querySelector('iframe');
-    if (iframe) {
-      iframe.contentWindow?.postMessage(
-        '{"event":"command","func":"setPlaybackRate","args":[' + rate + ']}',
-        '*'
-      );
+    if (playerRef.current) {
+      playerRef.current.setPlaybackRate(rate);
     }
   };
   
@@ -67,13 +88,7 @@ export const VideoPlayer = ({ videoUrl, title, progress }: VideoPlayerProps) => 
     <div className="space-y-4">
       {/* Video Player Container */}
       <div className="player-wrap aspect-video bg-black rounded-lg">
-        <iframe 
-          src={getEmbedUrl(videoUrl)}
-          title={title}
-          className="w-full h-full rounded-lg"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        />
+        <div id="youtube-player" className="w-full h-full rounded-lg"></div>
         
         {/* YouTube branding masks - completely opaque */}
         <div className="yt-mask top" aria-hidden="true"></div>
@@ -94,7 +109,7 @@ export const VideoPlayer = ({ videoUrl, title, progress }: VideoPlayerProps) => 
               className="p-2 hover:bg-muted rounded-lg transition-colors"
               onClick={handlePlayPause}
             >
-              <Play className="w-5 h-5" />
+              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
             </button>
             <button 
               className="p-2 hover:bg-muted rounded-lg transition-colors"
