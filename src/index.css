@@ -124,31 +124,6 @@
 }
 
 @layer components {
-  /* Video player with YouTube branding masks */
-  .player-wrap {
-    @apply relative overflow-hidden rounded-lg;
-  }
-  
-  .yt-mask {
-    @apply absolute z-10;
-    background: #000;
-    pointer-events: none;
-  }
-  
-  .yt-mask.top {
-    top: 0;
-    right: 0;
-    width: min(10vw, 80px);
-    height: min(10vw, 80px);
-  }
-  
-  .yt-mask.bottom {
-    bottom: 0;
-    right: 0;
-    width: min(14vw, 96px);
-    height: min(14vw, 96px);
-  }
-
   /* Korean education platform cards */
   .edu-card {
     @apply bg-card rounded-lg border border-border overflow-hidden;
