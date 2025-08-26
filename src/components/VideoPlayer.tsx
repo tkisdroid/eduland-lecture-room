@@ -159,12 +159,14 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
     }
   };
 
+  // Skip backward 10 seconds
   const handleSkipBack = () => {
     if (!playerRef.current) return;
     const currentTime = playerRef.current.getCurrentTime();
     playerRef.current.seekTo(Math.max(0, currentTime - 10));
   };
 
+  // Skip forward 10 seconds  
   const handleSkipForward = () => {
     if (!playerRef.current) return;
     const currentTime = playerRef.current.getCurrentTime();
