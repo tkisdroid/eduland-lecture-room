@@ -18,7 +18,7 @@ export const LectureHeader = ({
   onMenuClick 
 }: LectureHeaderProps) => {
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-border">
+    <header className="sticky top-0 z-30 bg-white border-b border-border">
       <div className="px-4 h-14 flex items-center justify-between">
         {/* Mobile menu button */}
         <button 
