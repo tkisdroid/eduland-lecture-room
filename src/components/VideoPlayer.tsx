@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause, SkipBack, SkipForward, Settings } from "lucide-react";
+import { Play, Pause, Rewind, FastForward, Settings } from "lucide-react";
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -79,7 +79,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
     };
   }, [isPlaying]);
 
-  // Touch controls for mobile
+  // Touch and mouse controls
   useEffect(() => {
     const videoContainer = videoContainerRef.current;
     if (!videoContainer) return;
@@ -89,9 +89,17 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
       handlePlayPause();
     };
 
+    const handleClick = (event: MouseEvent) => {
+      event.preventDefault();
+      handlePlayPause();
+    };
+
     videoContainer.addEventListener('touchstart', handleTouch);
+    videoContainer.addEventListener('click', handleClick);
+    
     return () => {
       videoContainer.removeEventListener('touchstart', handleTouch);
+      videoContainer.removeEventListener('click', handleClick);
     };
   }, [isPlaying]);
 
@@ -213,7 +221,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
                 className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent-secondary rounded-lg transition-colors"
                 onClick={handleSkipBack}
               >
-                <SkipBack className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Rewind className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button 
                 className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent rounded-lg transition-colors"
@@ -225,7 +233,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
                 className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent-secondary rounded-lg transition-colors"
                 onClick={handleSkipForward}
               >
-                <SkipForward className="w-4 h-4 sm:w-5 sm:h-5" />
+                <FastForward className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                 {currentTime} / {totalTime}
