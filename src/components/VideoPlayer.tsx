@@ -70,7 +70,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   return (
     <div className="space-y-4">
       {/* Video Player Container */}
-      <div className="player-wrap aspect-video bg-black rounded-lg overflow-hidden">
+      <div className="aspect-video bg-black rounded-lg overflow-hidden">
         <div
           ref={containerRef}
           data-plyr-provider="youtube"
