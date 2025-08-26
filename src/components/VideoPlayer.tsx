@@ -198,7 +198,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
     if (duration && duration > 0) {
       const seekTime = (clickPercent / 100) * duration;
       playerRef.current.seekTo(seekTime, true); // true for allowSeekAhead
-      setCurrentProgress(clickPercent);
+      setCurrentProgress(Math.round(clickPercent)); // Round to remove decimals
     }
   };
 
