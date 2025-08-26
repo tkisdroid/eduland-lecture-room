@@ -119,8 +119,9 @@ export const LectureSidebar = ({
     <>
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-14 left-0 z-40 w-[336px] h-[calc(100vh-3.5rem)] bg-sidebar-navy overflow-y-auto transition-transform lg:translate-x-0",
-        isOpen ? "translate-x-0" : "-translate-x-full"
+        "fixed top-14 left-0 w-[336px] h-[calc(100vh-3.5rem)] bg-sidebar-navy overflow-y-auto transition-transform lg:translate-x-0",
+        "z-30 lg:z-20", // Lower z-index on desktop, higher on mobile
+        isOpen ? "translate-x-0 z-40" : "-translate-x-full" // Higher z-index when mobile sidebar is open
       )}>
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-sidebar-navy-light">

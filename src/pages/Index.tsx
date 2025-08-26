@@ -77,7 +77,7 @@ const Index = () => {
             {/* Video Player Section */}
             <div className="mb-8">
               <div className={isScrolled ? "flex justify-end" : ""}>
-                <div className={`sticky top-20 z-30 transition-all duration-300 origin-top-right ${isScrolled ? 'max-w-[420px] xl:max-w-[480px] w-full' : 'w-full'}`}>
+                <div className={`sticky top-20 z-45 transition-all duration-300 origin-top-right ${isScrolled ? 'max-w-[280px] sm:max-w-[360px] md:max-w-[400px] lg:max-w-[420px] xl:max-w-[480px] w-full' : 'w-full'}`}>
                   <VideoPlayer 
                     key={videoKey} // Force complete re-render when lecture changes
                     videoUrl={currentLecture.videoUrl}
@@ -105,8 +105,10 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Tabs Section */}
-            <LectureTabs />
+            {/* Tabs Section - Fixed when scrolled */}
+            <div className={isScrolled ? 'sticky top-[300px] sm:top-[260px] md:top-[230px] lg:top-[210px] xl:top-[200px] z-40 bg-background pb-4 pt-2' : ''}>
+              <LectureTabs />
+            </div>
 
             {/* Instructor Info */}
             <InstructorInfo />

@@ -149,7 +149,10 @@
     height: min(14vw, 96px);
   }
 
-  /* Korean education platform cards */
+/* Custom z-index utilities for layering */
+.z-45 {
+  z-index: 45;
+}
   .edu-card {
     @apply bg-card rounded-lg border border-border overflow-hidden;
     box-shadow: var(--card-shadow);
