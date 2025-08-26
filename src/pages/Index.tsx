@@ -47,7 +47,7 @@ const Index = () => {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -72,7 +72,7 @@ const Index = () => {
         />
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-[336px]">
+        <main className="flex-1 md:ml-[336px] lg:ml-[336px]">
           <div className="max-w-[1280px] mx-auto px-4 py-6">
             {/* Video Player Section */}
             <div className={`transition-all duration-300 ease-out ${
@@ -112,15 +112,15 @@ const Index = () => {
             {/* Fixed Tabs Section when scrolled */}
             <div className={`${
               isScrolled 
-                ? 'fixed z-40 lg:left-[336px] bg-background border-b border-border' 
+                ? 'fixed z-40 md:left-[336px] lg:left-[336px] bg-background border-b border-border' 
                 : 'relative'
             }`}
             style={isScrolled ? {
-              top: '168px', // Position below the compact video (80px header + 88px compact video height)
+              top: '168px', // Position below the compact video (80px header + 88px compact video height)  
               left: '0',
               right: '0'
             } : {}}>
-              {isScrolled && <div className="max-w-[1280px] mx-auto px-4">
+              {isScrolled && <div className="max-w-[1280px] mx-auto px-4 md:px-6">
                 <LectureTabs />
               </div>}
               {!isScrolled && <LectureTabs />}
