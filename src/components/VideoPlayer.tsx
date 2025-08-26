@@ -139,6 +139,22 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
     }
   };
 
+  // Progress bar click handler
+  const handleProgressClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!playerRef.current) return;
+    
+    const progressBar = event.currentTarget;
+    const rect = progressBar.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const progressBarWidth = rect.width;
+    const clickPercent = (clickX / progressBarWidth) * 100;
+    
+    const duration = playerRef.current.getDuration();
+    const seekTime = (clickPercent / 100) * duration;
+    
+    playerRef.current.seekTo(seekTime);
+  };
+
   return (
     <div className="space-y-4">
       {/* Video Player Container */}
@@ -199,7 +215,10 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
 
           {/* Progress Bar */}
           <div className="mt-3">
-            <div className="progress-bar">
+            <div 
+              className="progress-bar cursor-pointer hover:opacity-80 transition-opacity" 
+              onClick={handleProgressClick}
+            >
               <div 
                 className="progress-fill" 
                 style={{ width: `${currentProgress}%` }}
