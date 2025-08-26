@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Play, Pause, SkipBack, SkipForward, Settings } from "lucide-react";
 
 interface VideoPlayerProps {
@@ -6,16 +6,13 @@ interface VideoPlayerProps {
   title: string;
   progress: number;
   compact?: boolean;
-  onFullscreenChange?: (isFullscreen: boolean) => void;
 }
 
-export const VideoPlayer = ({ videoUrl, title, progress, compact = false, onFullscreenChange }: VideoPlayerProps) => {
+export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState("15:30");
   const [totalTime, setTotalTime] = useState("36:30");
   const [playbackRate, setPlaybackRate] = useState(1);
-  
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   
   // Extract video ID from various YouTube URL formats
   const getVideoId = (url: string) => {
@@ -30,30 +27,6 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false, onFull
   const getEmbedUrl = () => {
     return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&iv_load_policy=3&playsinline=1&autoplay=1&cc_load_policy=0&fs=1&hl=ko`;
   };
-  
-  useEffect(() => {
-    const handleFsChange = () => {
-      const doc: any = document as any;
-      const fsEl =
-        doc.fullscreenElement ||
-        (doc as any).webkitFullscreenElement ||
-        (doc as any).mozFullScreenElement ||
-        (doc as any).msFullscreenElement;
-      const isFs = fsEl === iframeRef.current;
-      onFullscreenChange?.(!!isFs);
-    };
-    document.addEventListener('fullscreenchange', handleFsChange);
-    document.addEventListener('webkitfullscreenchange', handleFsChange as any);
-    document.addEventListener('mozfullscreenchange', handleFsChange as any);
-    document.addEventListener('MSFullscreenChange', handleFsChange as any);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFsChange);
-      document.removeEventListener('webkitfullscreenchange', handleFsChange as any);
-      document.removeEventListener('mozfullscreenchange', handleFsChange as any);
-      document.removeEventListener('MSFullscreenChange', handleFsChange as any);
-      onFullscreenChange?.(false);
-    };
-  }, [onFullscreenChange]);
 
   // Basic control handlers (for display purposes)
   const handlePlayPause = () => {
@@ -82,12 +55,11 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false, onFull
       <div className="aspect-video bg-black rounded-lg overflow-hidden">
         <iframe
           key={videoId} // Force re-render when video changes
-          ref={iframeRef}
           src={getEmbedUrl()}
           title={title}
           className="w-full h-full"
           frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         />
       </div>

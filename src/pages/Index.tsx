@@ -10,7 +10,6 @@ import { Menu, X } from "lucide-react";
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isPlayerFullscreen, setIsPlayerFullscreen] = useState(false);
   const [currentLecture, setCurrentLecture] = useState({
     id: "1",
     title: "소유권과 점유권의 기본 개념",
@@ -77,7 +76,7 @@ const Index = () => {
           <div className="max-w-[1280px] mx-auto px-4 py-6">
             {/* Video Player Section */}
             <div className={`mb-8 ${
-              isScrolled && !isPlayerFullscreen 
+              isScrolled 
                 ? 'fixed top-20 right-6 z-50 w-80 md:w-96 lg:w-[420px] xl:w-[480px] shadow-2xl rounded-lg' 
                 : 'relative w-full'
             }`}>
@@ -86,8 +85,7 @@ const Index = () => {
                 videoUrl={currentLecture.videoUrl}
                 title={currentLecture.title}
                 progress={currentLecture.progress}
-                compact={isScrolled && !isPlayerFullscreen}
-                onFullscreenChange={setIsPlayerFullscreen}
+                compact={isScrolled}
               />
               
               {/* Video Meta Info - Hide when scrolled */}
@@ -109,7 +107,7 @@ const Index = () => {
             </div>
 
             {/* Placeholder to maintain layout when video is fixed */}
-            {isScrolled && !isPlayerFullscreen && <div className="mb-8 h-96"></div>}
+            {isScrolled && <div className="mb-8 h-96"></div>}
 
             {/* Tabs Section */}
             <LectureTabs />
