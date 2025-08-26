@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Copy, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -64,6 +64,17 @@ export const LectureTabs = () => {
     setQuizAnswers({});
     setShowResults(false);
   };
+
+  // Auto-submit when all questions are answered
+  useEffect(() => {
+    const allQuestionsAnswered = quizQuestions.every(q => 
+      quizAnswers[q.id] !== undefined && quizAnswers[q.id] !== null
+    );
+    
+    if (allQuestionsAnswered && !showResults) {
+      submitQuiz();
+    }
+  }, [quizAnswers, showResults]);
 
   const renderStrategyTab = () => (
     <div className="space-y-4">
