@@ -34,13 +34,16 @@ const Index = () => {
   };
 
   useEffect(() => {
+    const ENTER = 260; // enter mini at this scroll
+    const EXIT = 140;  // exit mini below this scroll
     const handleScroll = () => {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      setIsScrolled(scrollTop > 200);
+      setIsScrolled((prev) => (prev ? scrollTop > EXIT : scrollTop > ENTER));
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true } as any);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll as any);
   }, []);
 
   useEffect(() => {
@@ -82,6 +85,18 @@ const Index = () => {
         {/* Main Content */}
         <main className="flex-1 lg:ml-[336px]">
           <div className="max-w-[1280px] mx-auto px-4 py-6">
+            {/* Sticky Lecture Info Bar */}
+            {isScrolled && (
+              <div className="sticky top-14 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border -mx-4 px-4 py-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                  <h2 className="text-sm sm:text-base font-semibold text-foreground truncate">{currentLecture.title}</h2>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="chip-meta">총 강의시간 {currentLecture.totalDuration}</span>
+                    <span className="chip-meta">강의 수 {currentLecture.totalLectures}강</span>
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Video Player Section */}
             <div className={`mb-8 sticky-player ${isScrolled && isLgUp ? 'mini-player' : ''}`}>
               <VideoPlayer 

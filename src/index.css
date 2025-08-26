@@ -170,7 +170,7 @@
 
   /* Sticky mini player helpers */
   .sticky-player {
-    @apply sticky top-20 z-40;
+    @apply sticky top-[104px] z-20;
   }
   .mini-player {
     @apply origin-top-right ml-auto max-w-[480px] shadow-2xl rounded-lg;
