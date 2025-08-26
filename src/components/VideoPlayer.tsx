@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Play, Pause, SkipBack, SkipForward, Settings } from "lucide-react";
 
 interface VideoPlayerProps {
@@ -8,11 +8,22 @@ interface VideoPlayerProps {
   compact?: boolean;
 }
 
+// YouTube Player interface
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
+
 export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState("15:30");
-  const [totalTime, setTotalTime] = useState("36:30");
+  const [currentTime, setCurrentTime] = useState("0:00");
+  const [totalTime, setTotalTime] = useState("0:00");
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [currentProgress, setCurrentProgress] = useState(progress);
+  const playerRef = useRef<any>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Extract video ID from various YouTube URL formats
   const getVideoId = (url: string) => {
@@ -22,31 +33,106 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   };
 
   const videoId = getVideoId(videoUrl);
-  
-  // Convert YouTube URL to embed format
-  const getEmbedUrl = () => {
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&color=white&controls=0&modestbranding=1&playsinline=1&rel=0&enablejsapi=1&playlist=${videoId}`;
+
+  // Format time from seconds to mm:ss
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  // Basic control handlers (for display purposes)
+  // Load YouTube API
+  useEffect(() => {
+    if (!window.YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
+      window.onYouTubeIframeAPIReady = () => {
+        initializePlayer();
+      };
+    } else {
+      initializePlayer();
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [videoId]);
+
+  const initializePlayer = () => {
+    if (playerRef.current) {
+      playerRef.current.destroy();
+    }
+
+    playerRef.current = new window.YT.Player('youtube-player', {
+      videoId: videoId,
+      playerVars: {
+        autoplay: 1,
+        mute: 1,
+        loop: 1,
+        color: 'white',
+        controls: 0,
+        modestbranding: 1,
+        playsinline: 1,
+        rel: 0,
+        enablejsapi: 1,
+        playlist: videoId
+      },
+      events: {
+        onReady: (event: any) => {
+          const duration = event.target.getDuration();
+          setTotalTime(formatTime(duration));
+          
+          // Start time update interval
+          intervalRef.current = setInterval(() => {
+            if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') {
+              const current = playerRef.current.getCurrentTime();
+              const total = playerRef.current.getDuration();
+              setCurrentTime(formatTime(current));
+              setCurrentProgress(Math.round((current / total) * 100));
+            }
+          }, 1000);
+        },
+        onStateChange: (event: any) => {
+          setIsPlaying(event.data === window.YT.PlayerState.PLAYING);
+        }
+      }
+    });
+  };
+
+  // Control handlers with YouTube API integration
   const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
+    if (!playerRef.current) return;
+    
+    if (isPlaying) {
+      playerRef.current.pauseVideo();
+    } else {
+      playerRef.current.playVideo();
+    }
   };
 
   const handleSkipBack = () => {
-    // Skip functionality would require YouTube API integration
-    console.log("Skip back 10 seconds");
+    if (!playerRef.current) return;
+    const currentTime = playerRef.current.getCurrentTime();
+    playerRef.current.seekTo(Math.max(0, currentTime - 10));
   };
 
   const handleSkipForward = () => {
-    // Skip functionality would require YouTube API integration
-    console.log("Skip forward 10 seconds");
+    if (!playerRef.current) return;
+    const currentTime = playerRef.current.getCurrentTime();
+    const duration = playerRef.current.getDuration();
+    playerRef.current.seekTo(Math.min(duration, currentTime + 10));
   };
 
   const handlePlaybackRateChange = (rate: number) => {
     setPlaybackRate(rate);
-    // Playback rate change would require YouTube API integration
-    console.log("Playback rate changed to:", rate);
+    if (playerRef.current) {
+      playerRef.current.setPlaybackRate(rate);
+    }
   };
 
   return (
@@ -54,15 +140,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
       {/* Video Player Container */}
       <div className="yt-wrapper bg-black rounded-lg overflow-hidden">
         <div className="yt-frame-container">
-          <iframe
-            key={videoId} // Force re-render when video changes
-            src={getEmbedUrl()}
-            title={title}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          />
+          <div id="youtube-player"></div>
         </div>
       </div>
 
@@ -120,11 +198,11 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
             <div className="progress-bar">
               <div 
                 className="progress-fill" 
-                style={{ width: `${progress}%` }}
+                style={{ width: `${currentProgress}%` }}
               />
             </div>
             <div className="flex justify-between items-center mt-1">
-              <span className="text-xs text-muted-foreground">진도율 {progress}%</span>
+              <span className="text-xs text-muted-foreground">진도율 {currentProgress}%</span>
               <span className="chip-meta">이어보기 가능</span>
             </div>
           </div>
