@@ -59,6 +59,12 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
         .plyr__volume--display {
           background: #F59B1B !important;
         }
+        .plyr__volume__input[type="range"]::-webkit-slider-thumb {
+          background: #F59B1B !important;
+        }
+        .plyr__volume__input[type="range"]::-moz-range-thumb {
+          background: #F59B1B !important;
+        }
         .plyr__menu__container .plyr__control[role="menuitemradio"][aria-checked="true"]::before {
           background: #F59B1B !important;
         }

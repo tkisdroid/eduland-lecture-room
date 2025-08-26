@@ -112,9 +112,14 @@ const Index = () => {
             {/* Fixed Tabs Section when scrolled */}
             <div className={`${
               isScrolled 
-                ? 'fixed top-20 left-0 right-0 z-40 lg:left-[336px] bg-background border-b border-border' 
+                ? 'fixed z-40 lg:left-[336px] bg-background border-b border-border' 
                 : 'relative'
-            }`}>
+            }`}
+            style={isScrolled ? {
+              top: '168px', // Position below the compact video (80px header + 88px compact video height)
+              left: '0',
+              right: '0'
+            } : {}}>
               {isScrolled && <div className="max-w-[1280px] mx-auto px-4">
                 <LectureTabs />
               </div>}
@@ -122,7 +127,7 @@ const Index = () => {
             </div>
 
             {/* Content spacer when tabs are fixed */}
-            {isScrolled && <div className="h-16"></div>}
+            {isScrolled && <div className="h-28"></div>}
 
             {/* Instructor Info */}
             <InstructorInfo />
