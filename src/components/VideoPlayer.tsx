@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Plyr from "plyr";
+import "plyr/dist/plyr.css";
 import { Play, Pause, SkipBack, SkipForward, Settings } from "lucide-react";
 
 interface VideoPlayerProps {
@@ -10,9 +12,12 @@ interface VideoPlayerProps {
 
 export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState("15:30");
-  const [totalTime, setTotalTime] = useState("36:30");
+  const [currentTime, setCurrentTime] = useState("00:00");
+  const [totalTime, setTotalTime] = useState("00:00");
   const [playbackRate, setPlaybackRate] = useState(1);
+  
+  const playerRef = useRef<HTMLDivElement | null>(null);
+  const plyrRef = useRef<Plyr | null>(null);
   
   // Extract video ID from various YouTube URL formats
   const getVideoId = (url: string) => {
@@ -22,45 +27,93 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   };
 
   const videoId = getVideoId(videoUrl);
-  
-  // Convert YouTube URL to embed format
-  const getEmbedUrl = () => {
-    return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&iv_load_policy=3&playsinline=1&autoplay=1&cc_load_policy=0&fs=1&hl=ko`;
+
+  const formatTime = (seconds: number) => {
+    const sec = Math.floor(seconds || 0);
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+    const mm = String(m).padStart(2, '0');
+    const ss = String(s).padStart(2, '0');
+    return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
   };
 
-  // Basic control handlers (for display purposes)
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
+  useEffect(() => {
+    if (!playerRef.current) return;
 
-  const handleSkipBack = () => {
-    // Skip functionality would require YouTube API integration
-    console.log("Skip back 10 seconds");
-  };
+    // Destroy previous instance if any (handles re-renders)
+    plyrRef.current?.destroy();
 
-  const handleSkipForward = () => {
-    // Skip functionality would require YouTube API integration
-    console.log("Skip forward 10 seconds");
-  };
+    const instance = new Plyr(playerRef.current, {
+      controls: [
+        'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'
+      ],
+      ratio: '16:9',
+      youtube: {
+        noCookie: true,
+        rel: 0,
+        modestbranding: 1,
+        cc_load_policy: 0,
+      },
+      settings: ['speed', 'quality'],
+    });
 
-  const handlePlaybackRateChange = (rate: number) => {
-    setPlaybackRate(rate);
-    // Playback rate change would require YouTube API integration
-    console.log("Playback rate changed to:", rate);
-  };
+    plyrRef.current = instance;
+
+    const updateTimes = () => {
+      setCurrentTime(formatTime(instance.currentTime || 0));
+      setTotalTime(formatTime(instance.duration || 0));
+    };
+
+    instance.on('ready', updateTimes);
+    instance.on('timeupdate', () => setCurrentTime(formatTime(instance.currentTime || 0)));
+    instance.on('loadedmetadata', updateTimes);
+    instance.on('loadeddata', updateTimes);
+    instance.on('play', () => setIsPlaying(true));
+    instance.on('pause', () => setIsPlaying(false));
+    instance.on('ratechange', () => setPlaybackRate(instance.speed || 1));
+
+    return () => {
+      instance.destroy();
+      plyrRef.current = null;
+    };
+  }, [videoId]);
+
+// Basic control handlers wired to Plyr
+const handlePlayPause = () => {
+  const p = plyrRef.current;
+  if (!p) return;
+  p.togglePlay();
+};
+
+const handleSkipBack = () => {
+  const p = plyrRef.current;
+  if (!p) return;
+  p.currentTime = Math.max(0, (p.currentTime || 0) - 10);
+};
+
+const handleSkipForward = () => {
+  const p = plyrRef.current;
+  if (!p) return;
+  p.currentTime = Math.min(p.duration || 0, (p.currentTime || 0) + 10);
+};
+
+const handlePlaybackRateChange = (rate: number) => {
+  setPlaybackRate(rate);
+  if (plyrRef.current) {
+    plyrRef.current.speed = rate;
+  }
+};
 
   return (
     <div className="space-y-4">
       {/* Video Player Container */}
-      <div className="aspect-video bg-black rounded-lg overflow-hidden">
-        <iframe
-          key={videoId} // Force re-render when video changes
-          src={getEmbedUrl()}
-          title={title}
+      <div className="aspect-video bg-black rounded-lg overflow-hidden" style={{ ["--plyr-color-main" as any]: 'hsl(var(--accent))' }}>
+        <div
+          ref={playerRef}
+          data-plyr-provider="youtube"
+          data-plyr-embed-id={videoId}
           className="w-full h-full"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
         />
       </div>
 
@@ -87,7 +140,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
               >
                 <SkipForward className="w-5 h-5" />
               </button>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-[11px] sm:text-xs text-muted-foreground whitespace-nowrap">
                 {currentTime} / {totalTime}
               </span>
             </div>
