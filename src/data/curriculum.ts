@@ -35,7 +35,7 @@ export const curriculumData: Subject[] = [
             title: "소유권과 점유권의 기본 개념",
             duration: "36:30",
             progress: 45,
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            videoUrl: "https://www.youtube.com/embed/c0gFbdrBLX0"
           },
           {
             id: "2", 
@@ -43,7 +43,7 @@ export const curriculumData: Subject[] = [
             title: "물권의 효력과 공시원칙",
             duration: "39:00",
             progress: 100,
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            videoUrl: "https://www.youtube.com/embed/c0gFbdrBLX0"
           },
           {
             id: "3",
@@ -51,7 +51,7 @@ export const curriculumData: Subject[] = [
             title: "부동산 등기와 아파트 매매",
             duration: "42:00", 
             progress: 0,
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            videoUrl: "https://www.youtube.com/embed/c0gFbdrBLX0"
           }
         ]
       },
@@ -65,7 +65,7 @@ export const curriculumData: Subject[] = [
             title: "민법총칙 - 권리능력과 행위능력",
             duration: "45:20",
             progress: 0,
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            videoUrl: "https://www.youtube.com/embed/c0gFbdrBLX0"
           }
         ]
       },
@@ -96,7 +96,7 @@ export const curriculumData: Subject[] = [
             title: "소유권 관련 주요 판례",
             duration: "28:15",
             progress: 0,
-            videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            videoUrl: "https://www.youtube.com/embed/c0gFbdrBLX0"
           }
         ]
       }
