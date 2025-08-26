@@ -24,6 +24,7 @@ const Index = () => {
   });
 
   const [videoKey, setVideoKey] = useState(0); // Force video refresh
+  const [isLgUp, setIsLgUp] = useState(false);
 
   const handleLectureSelect = (lecture: any) => {
     setCurrentLecture(lecture);
@@ -40,6 +41,13 @@ const Index = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const check = () => setIsLgUp(window.matchMedia('(min-width: 1024px)').matches);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
   }, []);
 
   return (
@@ -75,17 +83,13 @@ const Index = () => {
         <main className="flex-1 lg:ml-[336px]">
           <div className="max-w-[1280px] mx-auto px-4 py-6">
             {/* Video Player Section */}
-            <div className={`mb-8 ${
-              isScrolled 
-                ? 'fixed top-20 right-6 z-50 w-80 md:w-96 lg:w-[420px] xl:w-[480px] shadow-2xl rounded-lg' 
-                : 'relative w-full'
-            }`}>
+            <div className={`mb-8 sticky-player ${isScrolled && isLgUp ? 'mini-player' : ''}`}>
               <VideoPlayer 
                 key={videoKey} // Force complete re-render when lecture changes
                 videoUrl={currentLecture.videoUrl}
                 title={currentLecture.title}
                 progress={currentLecture.progress}
-                compact={isScrolled}
+                compact={isScrolled && isLgUp}
               />
               
               {/* Video Meta Info - Hide when scrolled */}
@@ -106,8 +110,6 @@ const Index = () => {
               )}
             </div>
 
-            {/* Placeholder to maintain layout when video is fixed */}
-            {isScrolled && <div className="mb-8 h-96"></div>}
 
             {/* Tabs Section */}
             <LectureTabs />
