@@ -1,6 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import Plyr from "plyr";
-import "plyr/dist/plyr.css";
+import { useState } from "react";
 import { Play, Pause, SkipBack, SkipForward, Settings } from "lucide-react";
 
 interface VideoPlayerProps {
@@ -15,8 +13,6 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   const [currentTime, setCurrentTime] = useState("15:30");
   const [totalTime, setTotalTime] = useState("36:30");
   const [playbackRate, setPlaybackRate] = useState(1);
-  const videoRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<Plyr | null>(null);
   
   // Extract video ID from various YouTube URL formats
   const getVideoId = (url: string) => {
@@ -26,59 +22,11 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   };
 
   const videoId = getVideoId(videoUrl);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      // Initialize Plyr with custom colors
-      playerRef.current = new Plyr(videoRef.current, {
-        controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'settings', 'fullscreen'],
-        settings: ['quality', 'speed'],
-        speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
-        youtube: { noCookie: false, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1 },
-        ratio: '16:9'
-      });
-
-      // Apply custom styling
-      const style = document.createElement('style');
-      style.textContent = `
-        .plyr--video {
-          border-radius: 0.5rem;
-          overflow: hidden;
-        }
-        .plyr__control--overlaid,
-        .plyr__control[data-plyr="play"],
-        .plyr__control[data-plyr="pause"] {
-          background: #F59B1B !important;
-        }
-        .plyr__control:hover {
-          background: #e08914 !important;
-        }
-        .plyr__progress__played {
-          background-color: #F59B1B !important;
-        }
-        .plyr__volume--display {
-          background: #F59B1B !important;
-        }
-        .plyr__volume__input[type="range"]::-webkit-slider-thumb {
-          background: #F59B1B !important;
-        }
-        .plyr__volume__input[type="range"]::-moz-range-thumb {
-          background: #F59B1B !important;
-        }
-        .plyr__menu__container .plyr__control[role="menuitemradio"][aria-checked="true"]::before {
-          background: #F59B1B !important;
-        }
-      `;
-      document.head.appendChild(style);
-
-      return () => {
-        if (playerRef.current) {
-          playerRef.current.destroy();
-        }
-        document.head.removeChild(style);
-      };
-    }
-  }, [videoId]);
+  
+  // Convert YouTube URL to embed format
+  const getEmbedUrl = () => {
+    return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&iv_load_policy=3&playsinline=1&autoplay=1&cc_load_policy=0&fs=1&hl=ko`;
+  };
 
   // Basic control handlers (for display purposes)
   const handlePlayPause = () => {
@@ -86,15 +34,18 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   };
 
   const handleSkipBack = () => {
+    // Skip functionality would require YouTube API integration
     console.log("Skip back 10 seconds");
   };
 
   const handleSkipForward = () => {
+    // Skip functionality would require YouTube API integration
     console.log("Skip forward 10 seconds");
   };
 
   const handlePlaybackRateChange = (rate: number) => {
     setPlaybackRate(rate);
+    // Playback rate change would require YouTube API integration
     console.log("Playback rate changed to:", rate);
   };
 
@@ -102,48 +53,51 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
     <div className="space-y-4">
       {/* Video Player Container */}
       <div className="aspect-video bg-black rounded-lg overflow-hidden">
-        <div
-          ref={videoRef}
-          data-plyr-provider="youtube"
-          data-plyr-embed-id={videoId}
+        <iframe
+          key={videoId} // Force re-render when video changes
+          src={getEmbedUrl()}
+          title={title}
           className="w-full h-full"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
         />
       </div>
 
       {/* Custom Control Bar - Hide in compact mode */}
       {!compact && (
-        <div className="bg-card border border-border rounded-lg p-3 sm:p-4">
-          <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-3">
-            <div className="flex items-center gap-2 sm:gap-3">
+        <div className="bg-card border border-border rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
               <button 
                 className="p-2 hover:bg-muted rounded-lg transition-colors"
                 onClick={handleSkipBack}
               >
-                <SkipBack className="w-4 h-4 sm:w-5 sm:h-5" />
+                <SkipBack className="w-5 h-5" />
               </button>
               <button 
                 className="p-2 hover:bg-muted rounded-lg transition-colors"
                 onClick={handlePlayPause}
               >
-                {isPlaying ? <Pause className="w-4 h-4 sm:w-5 sm:h-5" /> : <Play className="w-4 h-4 sm:w-5 sm:h-5" />}
+                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               </button>
               <button 
                 className="p-2 hover:bg-muted rounded-lg transition-colors"
                 onClick={handleSkipForward}
               >
-                <SkipForward className="w-4 h-4 sm:w-5 sm:h-5" />
+                <SkipForward className="w-5 h-5" />
               </button>
-              <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+              <span className="text-sm text-muted-foreground">
                 {currentTime} / {totalTime}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-3">
               {/* Playback Rate */}
               <select 
                 value={playbackRate}
                 onChange={(e) => handlePlaybackRateChange(Number(e.target.value))}
-                className="text-xs sm:text-sm bg-muted border border-border rounded px-1.5 py-0.5 sm:px-2 sm:py-1 cursor-pointer"
+                className="text-sm bg-muted border border-border rounded px-2 py-1 cursor-pointer"
               >
                 <option value={0.5}>0.5x</option>
                 <option value={0.75}>0.75x</option>
@@ -154,7 +108,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
               </select>
 
               <button className="p-2 hover:bg-muted rounded-lg">
-                <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Settings className="w-5 h-5" />
               </button>
             </div>
           </div>

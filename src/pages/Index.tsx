@@ -47,7 +47,7 @@ const Index = () => {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -72,16 +72,16 @@ const Index = () => {
         />
 
         {/* Main Content */}
-        <main className="flex-1 md:ml-[336px] lg:ml-[336px]">
+        <main className="flex-1 lg:ml-[336px]">
           <div className="max-w-[1280px] mx-auto px-4 py-6">
             {/* Video Player Section */}
-            <div className={`transition-all duration-300 ease-out ${
+            <div className={`mb-8 ${
               isScrolled 
-                ? 'fixed top-20 right-6 z-50 w-80 md:w-96 lg:w-[420px] xl:w-[480px] shadow-2xl rounded-lg bg-background' 
+                ? 'fixed top-20 right-6 z-50 w-80 md:w-96 lg:w-[420px] xl:w-[480px] shadow-2xl rounded-lg' 
                 : 'relative w-full'
             }`}>
               <VideoPlayer 
-                key={videoKey}
+                key={videoKey} // Force complete re-render when lecture changes
                 videoUrl={currentLecture.videoUrl}
                 title={currentLecture.title}
                 progress={currentLecture.progress}
@@ -109,25 +109,8 @@ const Index = () => {
             {/* Placeholder to maintain layout when video is fixed */}
             {isScrolled && <div className="mb-8 h-96"></div>}
 
-            {/* Fixed Tabs Section when scrolled */}
-            <div className={`${
-              isScrolled 
-                ? 'fixed z-40 md:left-[336px] lg:left-[336px] bg-background border-b border-border' 
-                : 'relative'
-            }`}
-            style={isScrolled ? {
-              top: '168px', // Position below the compact video (80px header + 88px compact video height)  
-              left: '0',
-              right: '0'
-            } : {}}>
-              {isScrolled && <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-                <LectureTabs />
-              </div>}
-              {!isScrolled && <LectureTabs />}
-            </div>
-
-            {/* Content spacer when tabs are fixed */}
-            {isScrolled && <div className="h-28"></div>}
+            {/* Tabs Section */}
+            <LectureTabs />
 
             {/* Instructor Info */}
             <InstructorInfo />

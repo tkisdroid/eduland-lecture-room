@@ -23,13 +23,13 @@ export const LectureHeader = ({
         {/* Mobile menu button */}
         <button 
           onClick={onMenuClick}
-          className="md:hidden p-2 -m-2 text-muted-foreground hover:text-foreground"
+          className="lg:hidden p-2 -m-2 text-muted-foreground hover:text-foreground"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         {/* Subject and meta info */}
-        <div className="flex-1 md:ml-[336px] lg:ml-[336px]">
+        <div className="flex-1 lg:ml-[336px]">
           <div className="flex items-center gap-4">
             <h1 className="text-lg font-semibold text-foreground truncate">
               {subject}

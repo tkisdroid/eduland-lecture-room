@@ -119,7 +119,7 @@ export const LectureSidebar = ({
     <>
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-14 left-0 z-40 w-[336px] h-[calc(100vh-3.5rem)] bg-sidebar-navy overflow-y-auto transition-transform md:translate-x-0",
+        "fixed top-14 left-0 z-40 w-[336px] h-[calc(100vh-3.5rem)] bg-sidebar-navy overflow-y-auto transition-transform lg:translate-x-0",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Header */}
@@ -127,7 +127,7 @@ export const LectureSidebar = ({
           <h2 className="text-xl font-bold text-sidebar-text-primary">나의 강의실</h2>
           <button 
             onClick={onClose}
-            className="md:hidden p-1 text-sidebar-text-secondary hover:text-sidebar-text-primary transition-colors"
+            className="lg:hidden p-1 text-sidebar-text-secondary hover:text-sidebar-text-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
