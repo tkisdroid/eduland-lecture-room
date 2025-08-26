@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import Plyr from "plyr";
+import { useState } from "react";
+import { Play, Pause, SkipBack, SkipForward, Settings } from "lucide-react";
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -9,11 +9,11 @@ interface VideoPlayerProps {
 }
 
 export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: VideoPlayerProps) => {
-  const [currentSec, setCurrentSec] = useState(0);
-  const [durationSec, setDurationSec] = useState(0);
-  const playerRef = useRef<any>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState("15:30");
+  const [totalTime, setTotalTime] = useState("36:30");
+  const [playbackRate, setPlaybackRate] = useState(1);
+  
   // Extract video ID from various YouTube URL formats
   const getVideoId = (url: string) => {
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
@@ -21,69 +21,96 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
     return match ? match[1] : 'dQw4w9WgXcQ'; // fallback to a working video ID
   };
 
-  const videoId = useMemo(() => getVideoId(videoUrl), [videoUrl]);
+  const videoId = getVideoId(videoUrl);
+  
+  // Convert YouTube URL to embed format
+  const getEmbedUrl = () => {
+    return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&iv_load_policy=3&playsinline=1&autoplay=1&cc_load_policy=0&fs=1&hl=ko`;
+  };
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-    if (!playerRef.current) {
-      playerRef.current = new Plyr(containerRef.current, {
-        autoplay: false,
-        ratio: '16:9',
-        // Keep controls simple; Plyr colors are themed via --plyr-color-main
-        controls: [
-          'play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'pip', 'airplay', 'fullscreen'
-        ],
-        youtube: { rel: 0, modestbranding: 1, iv_load_policy: 3, playsinline: 1 },
-      });
+  // Basic control handlers (for display purposes)
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
 
-      playerRef.current.on('timeupdate', () => {
-        setCurrentSec(playerRef.current?.currentTime || 0);
-        setDurationSec(playerRef.current?.duration || 0);
-      });
-      playerRef.current.on('loadedmetadata', () => {
-        setDurationSec(playerRef.current?.duration || 0);
-      });
-    }
+  const handleSkipBack = () => {
+    // Skip functionality would require YouTube API integration
+    console.log("Skip back 10 seconds");
+  };
 
-    // Always update source when URL changes
-    if (playerRef.current) {
-      playerRef.current.source = {
-        type: 'video',
-        sources: [{ src: videoId, provider: 'youtube' }],
-      } as any;
-    }
+  const handleSkipForward = () => {
+    // Skip functionality would require YouTube API integration
+    console.log("Skip forward 10 seconds");
+  };
 
-    return () => {
-      // keep instance alive for performance; destroyed on unmount of page
-    };
-  }, [videoId]);
-
-  const formatTime = (s: number) => {
-    if (!Number.isFinite(s)) return '00:00';
-    const h = Math.floor(s / 3600);
-    const m = Math.floor((s % 3600) / 60);
-    const sec = Math.floor(s % 60);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return h > 0 ? `${pad(h)}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
+  const handlePlaybackRateChange = (rate: number) => {
+    setPlaybackRate(rate);
+    // Playback rate change would require YouTube API integration
+    console.log("Playback rate changed to:", rate);
   };
 
   return (
     <div className="space-y-4">
       {/* Video Player Container */}
       <div className="aspect-video bg-black rounded-lg overflow-hidden">
-        <div
-          ref={containerRef}
-          data-plyr-provider="youtube"
-          data-plyr-embed-id={videoId}
-          aria-label={title}
+        <iframe
+          key={videoId} // Force re-render when video changes
+          src={getEmbedUrl()}
+          title={title}
+          className="w-full h-full"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
         />
       </div>
 
-      {/* Meta & Progress - Hide in compact mode */}
+      {/* Custom Control Bar - Hide in compact mode */}
       {!compact && (
         <div className="bg-card border border-border rounded-lg p-4">
-          <div className="player-meta sm:text-sm">
-            <span className="text-muted-foreground">{formatTime(currentSec)} / {formatTime(durationSec)}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button 
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                onClick={handleSkipBack}
+              >
+                <SkipBack className="w-5 h-5" />
+              </button>
+              <button 
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                onClick={handlePlayPause}
+              >
+                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              </button>
+              <button 
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                onClick={handleSkipForward}
+              >
+                <SkipForward className="w-5 h-5" />
+              </button>
+              <span className="text-sm text-muted-foreground">
+                {currentTime} / {totalTime}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Playback Rate */}
+              <select 
+                value={playbackRate}
+                onChange={(e) => handlePlaybackRateChange(Number(e.target.value))}
+                className="text-sm bg-muted border border-border rounded px-2 py-1 cursor-pointer"
+              >
+                <option value={0.5}>0.5x</option>
+                <option value={0.75}>0.75x</option>
+                <option value={1}>표준</option>
+                <option value={1.25}>1.25x</option>
+                <option value={1.5}>1.5x</option>
+                <option value={2}>2x</option>
+              </select>
+
+              <button className="p-2 hover:bg-muted rounded-lg">
+                <Settings className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Progress Bar */}
