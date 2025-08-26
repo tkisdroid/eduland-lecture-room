@@ -35,12 +35,30 @@ const Index = () => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      setIsScrolled(scrollTop > 200);
+      
+      // Use hysteresis to prevent flickering
+      if (scrollTop > 250 && !isScrolled) {
+        setIsScrolled(true);
+      } else if (scrollTop < 150 && isScrolled) {
+        setIsScrolled(false);
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    // Throttle scroll events for better performance
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', throttledScroll, { passive: true });
+    return () => window.removeEventListener('scroll', throttledScroll);
+  }, [isScrolled]);
 
   return (
     <div className="min-h-screen bg-background">

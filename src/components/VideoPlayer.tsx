@@ -66,38 +66,38 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
 
       {/* Custom Control Bar - Hide in compact mode */}
       {!compact && (
-        <div className="bg-card border border-border rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        <div className="bg-card border border-border rounded-lg p-2 sm:p-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1 sm:gap-3 flex-1 min-w-0">
               <button 
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent-secondary rounded-lg transition-colors"
                 onClick={handleSkipBack}
               >
-                <SkipBack className="w-5 h-5" />
+                <SkipBack className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button 
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent rounded-lg transition-colors"
                 onClick={handlePlayPause}
               >
-                {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                {isPlaying ? <Pause className="w-4 h-4 sm:w-5 sm:h-5" /> : <Play className="w-4 h-4 sm:w-5 sm:h-5" />}
               </button>
               <button 
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent-secondary rounded-lg transition-colors"
                 onClick={handleSkipForward}
               >
-                <SkipForward className="w-5 h-5" />
+                <SkipForward className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                 {currentTime} / {totalTime}
               </span>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
               {/* Playback Rate */}
               <select 
                 value={playbackRate}
                 onChange={(e) => handlePlaybackRateChange(Number(e.target.value))}
-                className="text-sm bg-muted border border-border rounded px-2 py-1 cursor-pointer"
+                className="text-xs sm:text-sm bg-muted border border-border rounded px-1.5 sm:px-2 py-1 cursor-pointer"
               >
                 <option value={0.5}>0.5x</option>
                 <option value={0.75}>0.75x</option>
@@ -107,8 +107,8 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
                 <option value={2}>2x</option>
               </select>
 
-              <button className="p-2 hover:bg-muted rounded-lg">
-                <Settings className="w-5 h-5" />
+              <button className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent-secondary rounded-lg transition-colors">
+                <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>

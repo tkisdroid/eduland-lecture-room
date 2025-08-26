@@ -6,13 +6,14 @@
 
 @layer base {
   :root {
-    /* Core colors for Korean education platform */
+    /* Core colors for Korean education platform - Company Logo Theme */
     --bg: 0 0% 100%;
     --text: 216 12% 6%;
     --muted: 215 14% 38%;
     --border: 210 16% 91%;
-    --accent: 145 63% 32%;
-    --accent-weak: 144 41% 91%;
+    --accent: 33 94% 66%;
+    --accent-secondary: 35 91% 53%;
+    --accent-weak: 33 65% 92%;
     --danger: 0 73% 58%;
     
     /* Sidebar colors matching the design */
@@ -25,9 +26,9 @@
     
     /* Progress and completion states */
     --progress-track: 210 17% 94%;
-    --progress-fill: 145 63% 32%;
-    --watched-bg: 144 41% 96%;
-    --watched-text: 145 49% 26%;
+    --progress-fill: 33 94% 66%;
+    --watched-bg: 33 65% 96%;
+    --watched-text: 35 70% 35%;
     
     /* Shadows for cards and elevation */
     --card-shadow: 0 4px 14px rgb(0 0 0 / 0.06);
@@ -40,19 +41,19 @@
     --card-foreground: 216 12% 6%;
     --popover: 0 0% 100%;
     --popover-foreground: 216 12% 6%;
-    --primary: 145 63% 32%;
+    --primary: 33 94% 66%;
     --primary-foreground: 0 0% 98%;
     --secondary: 210 17% 94%;
     --secondary-foreground: 216 12% 6%;
     --muted: 210 17% 94%;
     --muted-foreground: 215 14% 38%;
-    --accent: 145 63% 32%;
+    --accent: 33 94% 66%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 73% 58%;
     --destructive-foreground: 0 0% 98%;
     --border: 210 16% 91%;
     --input: 210 16% 91%;
-    --ring: 145 63% 32%;
+    --ring: 33 94% 66%;
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
@@ -120,10 +121,17 @@
     @apply bg-background text-foreground;
     font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     line-height: 1.5;
+    scroll-behavior: smooth;
   }
 }
 
 @layer components {
+  /* Smooth scrolling optimizations */  
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
   /* Korean education platform cards */
   .edu-card {
     @apply bg-card rounded-lg border border-border overflow-hidden;
