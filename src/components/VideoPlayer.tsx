@@ -22,9 +22,11 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   const [totalTime, setTotalTime] = useState("0:00");
   const [playbackRate, setPlaybackRate] = useState(1);
   const [currentProgress, setCurrentProgress] = useState(progress);
+  const [isMinimized, setIsMinimized] = useState(false);
   const playerRef = useRef<any>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoContainerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
   
   // Extract video ID from various YouTube URL formats
   const getVideoId = (url: string) => {
@@ -102,6 +104,51 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
       videoContainer.removeEventListener('click', handleClick);
     };
   }, [isPlaying]);
+
+  // Intersection Observer for mobile scroll minimization
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // Only enable on mobile devices
+    const isMobile = window.innerWidth <= 768;
+    if (!isMobile) return;
+
+    const videoContainer = videoContainerRef.current;
+    if (!videoContainer) return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // When video is less than 30% visible, minimize it
+          if (entry.intersectionRatio < 0.3) {
+            setIsMinimized(true);
+          } else {
+            setIsMinimized(false);
+          }
+        });
+      },
+      {
+        threshold: [0, 0.3, 0.5, 1]
+      }
+    );
+
+    observerRef.current.observe(videoContainer);
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  // Cleanup observer on unmount
+  useEffect(() => {
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
 
   const initializePlayer = () => {
     if (playerRef.current) {
@@ -207,15 +254,31 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
       {/* Video Player Container */}
       <div 
         ref={videoContainerRef}
-        className="yt-wrapper bg-black rounded-lg overflow-hidden cursor-pointer select-none"
+        className={`yt-wrapper bg-black rounded-lg overflow-hidden cursor-pointer select-none transition-all duration-300 ease-in-out ${
+          isMinimized 
+            ? 'fixed top-4 right-4 w-48 h-28 z-50 shadow-2xl md:relative md:w-full md:h-auto md:shadow-none md:top-auto md:right-auto'
+            : 'relative w-full'
+        }`}
       >
         <div className="yt-frame-container">
           <div id="youtube-player"></div>
         </div>
+        
+        {/* Minimize/Maximize button - only visible when minimized on mobile */}
+        {isMinimized && (
+          <button
+            onClick={() => setIsMinimized(false)}
+            className="absolute top-1 left-1 bg-black/50 text-white rounded p-1 hover:bg-black/70 transition-colors md:hidden"
+          >
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 16a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+            </svg>
+          </button>
+        )}
       </div>
 
-      {/* Custom Control Bar - Hide in compact mode */}
-      {!compact && (
+      {/* Custom Control Bar - Hide in compact mode or when minimized */}
+      {!compact && !isMinimized && (
         <div className="bg-card border border-border rounded-lg p-2 sm:p-4">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1 sm:gap-3 flex-1 min-w-0">
