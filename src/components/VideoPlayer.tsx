@@ -80,7 +80,11 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
         playsinline: 1,
         rel: 0,
         enablejsapi: 1,
-        playlist: videoId
+        playlist: videoId,
+        iv_load_policy: 3,
+        cc_load_policy: 0,
+        fs: 1,
+        disablekb: 1
       },
       events: {
         onReady: (event: any) => {
