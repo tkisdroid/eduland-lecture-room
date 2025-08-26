@@ -11,8 +11,8 @@
     --text: 216 12% 6%;
     --muted: 215 14% 38%;
     --border: 210 16% 91%;
-    --accent: 145 63% 32%;
-    --accent-weak: 144 41% 91%;
+    --accent: 39 96% 67%; /* #fbc054 */
+    --accent-weak: 39 96% 94%;
     --danger: 0 73% 58%;
     
     /* Sidebar colors matching the design */
@@ -25,9 +25,9 @@
     
     /* Progress and completion states */
     --progress-track: 210 17% 94%;
-    --progress-fill: 145 63% 32%;
-    --watched-bg: 144 41% 96%;
-    --watched-text: 145 49% 26%;
+    --progress-fill: 39 96% 67%; /* #fbc054 */
+    --watched-bg: 39 96% 94%;
+    --watched-text: 39 77% 35%;
     
     /* Shadows for cards and elevation */
     --card-shadow: 0 4px 14px rgb(0 0 0 / 0.06);
@@ -40,19 +40,19 @@
     --card-foreground: 216 12% 6%;
     --popover: 0 0% 100%;
     --popover-foreground: 216 12% 6%;
-    --primary: 145 63% 32%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 39 96% 67%; /* #fbc054 */
+    --primary-foreground: 39 77% 12%;
     --secondary: 210 17% 94%;
     --secondary-foreground: 216 12% 6%;
     --muted: 210 17% 94%;
     --muted-foreground: 215 14% 38%;
-    --accent: 145 63% 32%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 39 96% 67%; /* #fbc054 */
+    --accent-foreground: 39 77% 12%;
     --destructive: 0 73% 58%;
     --destructive-foreground: 0 0% 98%;
     --border: 210 16% 91%;
     --input: 210 16% 91%;
-    --ring: 145 63% 32%;
+    --ring: 39 96% 67%; /* #fbc054 */
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
