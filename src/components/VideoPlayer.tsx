@@ -24,6 +24,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   const [currentProgress, setCurrentProgress] = useState(progress);
   const playerRef = useRef<any>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
   
   // Extract video ID from various YouTube URL formats
   const getVideoId = (url: string) => {
@@ -62,6 +63,37 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
       }
     };
   }, [videoId]);
+
+  // Keyboard controls (spacebar for play/pause)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Space' && event.target === document.body) {
+        event.preventDefault();
+        handlePlayPause();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isPlaying]);
+
+  // Touch controls for mobile
+  useEffect(() => {
+    const videoContainer = videoContainerRef.current;
+    if (!videoContainer) return;
+
+    const handleTouch = (event: TouchEvent) => {
+      event.preventDefault();
+      handlePlayPause();
+    };
+
+    videoContainer.addEventListener('touchstart', handleTouch);
+    return () => {
+      videoContainer.removeEventListener('touchstart', handleTouch);
+    };
+  }, [isPlaying]);
 
   const initializePlayer = () => {
     if (playerRef.current) {
@@ -147,18 +179,26 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
     const rect = progressBar.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
     const progressBarWidth = rect.width;
-    const clickPercent = (clickX / progressBarWidth) * 100;
+    
+    // Ensure click position is within bounds
+    const clampedX = Math.max(0, Math.min(clickX, progressBarWidth));
+    const clickPercent = (clampedX / progressBarWidth) * 100;
     
     const duration = playerRef.current.getDuration();
-    const seekTime = (clickPercent / 100) * duration;
-    
-    playerRef.current.seekTo(seekTime);
+    if (duration && duration > 0) {
+      const seekTime = (clickPercent / 100) * duration;
+      playerRef.current.seekTo(seekTime, true); // true for allowSeekAhead
+      setCurrentProgress(clickPercent);
+    }
   };
 
   return (
     <div className="space-y-4">
       {/* Video Player Container */}
-      <div className="yt-wrapper bg-black rounded-lg overflow-hidden">
+      <div 
+        ref={videoContainerRef}
+        className="yt-wrapper bg-black rounded-lg overflow-hidden cursor-pointer select-none"
+      >
         <div className="yt-frame-container">
           <div id="youtube-player"></div>
         </div>
