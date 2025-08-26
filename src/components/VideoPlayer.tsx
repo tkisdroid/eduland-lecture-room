@@ -25,7 +25,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   
   // Convert YouTube URL to embed format
   const getEmbedUrl = () => {
-    return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&iv_load_policy=3&playsinline=1&autoplay=1&cc_load_policy=0&fs=1&hl=ko`;
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&color=white&controls=0&modestbranding=1&playsinline=1&rel=0&enablejsapi=1&playlist=${videoId}`;
   };
 
   // Basic control handlers (for display purposes)
@@ -52,16 +52,18 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   return (
     <div className="space-y-4">
       {/* Video Player Container */}
-      <div className="aspect-video bg-black rounded-lg overflow-hidden">
-        <iframe
-          key={videoId} // Force re-render when video changes
-          src={getEmbedUrl()}
-          title={title}
-          className="w-full h-full"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        />
+      <div className="yt-wrapper bg-black rounded-lg overflow-hidden">
+        <div className="yt-frame-container">
+          <iframe
+            key={videoId} // Force re-render when video changes
+            src={getEmbedUrl()}
+            title={title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </div>
       </div>
 
       {/* Custom Control Bar - Hide in compact mode */}
