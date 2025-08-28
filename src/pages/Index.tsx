@@ -17,7 +17,7 @@ const Index = () => {
     section: "핵심개념입문", 
     lectureNumber: 1,
     duration: "36:30",
-    videoUrl: "https://www.youtube.com/embed/c0gFbdrBLX0",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     progress: 45,
     totalLectures: 3,
     totalDuration: "01:57:30"
