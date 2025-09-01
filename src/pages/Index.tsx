@@ -128,7 +128,7 @@ const Index = () => {
             {isScrolled && <div className="mb-8 h-96"></div>}
 
             {/* Tabs Section */}
-            <LectureTabs />
+            <LectureTabs currentLectureId={currentLecture.id} />
 
             {/* Instructor Info */}
             <InstructorInfo />
