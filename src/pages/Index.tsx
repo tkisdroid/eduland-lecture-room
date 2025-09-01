@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { LectureSidebar } from "@/components/LectureSidebar";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { LectureHeader } from "@/components/LectureHeader";
@@ -6,9 +7,48 @@ import { LectureTabs } from "@/components/LectureTabs";
 import { RecentCourses } from "@/components/RecentCourses";
 import { InstructorInfo } from "@/components/InstructorInfo";
 import { defaultLectureData } from "@/data/defaultLecture";
+import { curriculumData } from "@/data/curriculum";
 import { Menu, X } from "lucide-react";
 
+// Helper function to find lecture by ID
+const findLectureById = (lectureId: string) => {
+  for (const subject of curriculumData) {
+    // Search in regular sections
+    for (const section of subject.sections) {
+      const lecture = section.lectures.find(l => l.id === lectureId);
+      if (lecture) {
+        return {
+          ...lecture,
+          lectureNumber: lecture.number,
+          subject: subject.name,
+          section: section.name,
+          totalLectures: section.lectures.length,
+          totalDuration: "01:57:30" // TODO: Calculate from all lectures in section
+        };
+      }
+    }
+    // Search in special sections
+    if (subject.specialSections) {
+      for (const section of subject.specialSections) {
+        const lecture = section.lectures.find(l => l.id === lectureId);
+        if (lecture) {
+          return {
+            ...lecture,
+            lectureNumber: lecture.number,
+            subject: subject.name,
+            section: section.name,
+            totalLectures: section.lectures.length,
+            totalDuration: "01:57:30" // TODO: Calculate from all lectures in section
+          };
+        }
+      }
+    }
+  }
+  return null;
+};
+
 const Index = () => {
+  const [searchParams] = useSearchParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [currentLecture, setCurrentLecture] = useState(defaultLectureData);
@@ -21,6 +61,18 @@ const Index = () => {
     // Scroll to top when selecting a new lecture
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Check for lectureId query parameter on mount
+  useEffect(() => {
+    const lectureId = searchParams.get('lectureId');
+    if (lectureId) {
+      const foundLecture = findLectureById(lectureId);
+      if (foundLecture) {
+        setCurrentLecture(foundLecture);
+        setVideoKey(prev => prev + 1);
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const handleScroll = () => {
