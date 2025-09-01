@@ -1,29 +1,120 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { LectureSidebar } from "@/components/LectureSidebar";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { LectureHeader } from "@/components/LectureHeader";
 import { LectureTabs } from "@/components/LectureTabs";
 import { RecentCourses } from "@/components/RecentCourses";
 import { InstructorInfo } from "@/components/InstructorInfo";
+import { curriculumData } from "@/data/curriculum";
 import { Menu, X } from "lucide-react";
 
+// Helper function to find lecture by ID
+const findLectureById = (lectureId: string) => {
+  for (const subject of curriculumData) {
+    for (const section of subject.sections) {
+      const lecture = section.lectures.find(l => l.id === lectureId);
+      if (lecture) {
+        return {
+          lecture,
+          subject: subject.name,
+          section: section.name,
+          totalLectures: section.lectures.length,
+          totalDuration: calculateTotalDuration(section.lectures)
+        };
+      }
+    }
+    // Check special sections
+    if (subject.specialSections) {
+      for (const section of subject.specialSections) {
+        const lecture = section.lectures.find(l => l.id === lectureId);
+        if (lecture) {
+          return {
+            lecture,
+            subject: subject.name,
+            section: section.name,
+            totalLectures: section.lectures.length,
+            totalDuration: calculateTotalDuration(section.lectures)
+          };
+        }
+      }
+    }
+  }
+  return null;
+};
+
+// Helper function to get first available lecture
+const getFirstAvailableLecture = () => {
+  for (const subject of curriculumData) {
+    for (const section of subject.sections) {
+      if (section.lectures.length > 0) {
+        const lecture = section.lectures[0];
+        return {
+          lecture,
+          subject: subject.name,
+          section: section.name,
+          totalLectures: section.lectures.length,
+          totalDuration: calculateTotalDuration(section.lectures)
+        };
+      }
+    }
+  }
+  return null;
+};
+
+// Helper function to calculate total duration
+const calculateTotalDuration = (lectures: any[]) => {
+  if (lectures.length === 0) return "00:00";
+  
+  let totalMinutes = 0;
+  lectures.forEach(lecture => {
+    const [minutes, seconds] = lecture.duration.split(':').map(Number);
+    totalMinutes += minutes + (seconds / 60);
+  });
+  
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = Math.floor(totalMinutes % 60);
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+};
+
 const Index = () => {
+  const [searchParams] = useSearchParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [currentLecture, setCurrentLecture] = useState({
-    id: "1",
-    title: "소유권과 점유권의 기본 개념",
-    subject: "민법 및 민사특별법",
-    section: "핵심개념입문", 
-    lectureNumber: 1,
-    duration: "36:30",
-    videoUrl: "https://www.youtube.com/embed/c0gFbdrBLX0",
-    progress: 45,
-    totalLectures: 3,
-    totalDuration: "01:57:30"
-  });
-
+  const [currentLecture, setCurrentLecture] = useState<any>(null);
   const [videoKey, setVideoKey] = useState(0); // Force video refresh
+
+  // Initialize lecture on component mount
+  useEffect(() => {
+    const lectureId = searchParams.get('lectureId');
+    let lectureData = null;
+
+    if (lectureId) {
+      // Try to find lecture by query parameter
+      lectureData = findLectureById(lectureId);
+    }
+
+    if (!lectureData) {
+      // Fallback to first available lecture
+      lectureData = getFirstAvailableLecture();
+    }
+
+    if (lectureData) {
+      const { lecture, subject, section, totalLectures, totalDuration } = lectureData;
+      setCurrentLecture({
+        id: lecture.id,
+        title: lecture.title,
+        subject: subject,
+        section: section,
+        lectureNumber: lecture.number,
+        duration: lecture.duration,
+        videoUrl: lecture.videoUrl,
+        progress: lecture.progress,
+        totalLectures: totalLectures,
+        totalDuration: totalDuration
+      });
+    }
+  }, [searchParams]);
 
   const handleLectureSelect = (lecture: any) => {
     setCurrentLecture(lecture);
@@ -59,6 +150,18 @@ const Index = () => {
     window.addEventListener('scroll', throttledScroll, { passive: true });
     return () => window.removeEventListener('scroll', throttledScroll);
   }, [isScrolled]);
+
+  // Show loading if currentLecture is not yet initialized
+  if (!currentLecture) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">강의를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
