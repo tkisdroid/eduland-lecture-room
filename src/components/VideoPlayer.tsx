@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { Play, Pause, Rewind, FastForward, Settings } from "lucide-react";
 import { uiLabels, defaultValues } from "@/data/uiLabels";
+import { useVideoProgress } from "@/hooks/useVideoProgress";
 
 interface VideoPlayerProps {
   videoUrl: string;
   title: string;
   progress: number;
   compact?: boolean;
+  memberId?: string;
+  lectureId?: string;
 }
 
 // YouTube Player interface
@@ -17,17 +20,25 @@ declare global {
   }
 }
 
-export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: VideoPlayerProps) => {
+export const VideoPlayer = ({ videoUrl, title, progress, compact = false, memberId, lectureId }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState("0:00");
   const [totalTime, setTotalTime] = useState("0:00");
   const [playbackRate, setPlaybackRate] = useState(1);
   const [currentProgress, setCurrentProgress] = useState(progress);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [videoDuration, setVideoDuration] = useState(0);
   const playerRef = useRef<any>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // 진도 추적 훅 (memberId와 lectureId가 있을 때만 사용)
+  const progressTracker = useVideoProgress({
+    memberId: memberId || "",
+    lectureId: lectureId || "",
+    videoDuration
+  });
   
   // Extract video ID from various YouTube URL formats
   const getVideoId = (url: string) => {
@@ -59,13 +70,19 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
     } else {
       initializePlayer();
     }
+  }, [videoId]);
 
+  // Cleanup
+  useEffect(() => {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
+      if (memberId && lectureId) {
+        progressTracker.stopProgressTracking();
+      }
     };
-  }, [videoId]);
+  }, [memberId, lectureId, progressTracker]);
 
   // Keyboard controls (spacebar for play/pause)
   useEffect(() => {
@@ -178,6 +195,16 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
         onReady: (event: any) => {
           const duration = event.target.getDuration();
           setTotalTime(formatTime(duration));
+          setVideoDuration(duration);
+          
+          // 저장된 진도가 있으면 해당 위치로 이동
+          if (memberId && lectureId) {
+            const savedProgress = progressTracker.getSavedProgress();
+            if (savedProgress.lastWatchedTime > 0) {
+              event.target.seekTo(savedProgress.lastWatchedTime);
+              console.log(`Resumed at ${savedProgress.lastWatchedTime}s (${savedProgress.progress}%)`);
+            }
+          }
           
           // Start time update interval
           intervalRef.current = setInterval(() => {
@@ -185,12 +212,35 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
               const current = playerRef.current.getCurrentTime();
               const total = playerRef.current.getDuration();
               setCurrentTime(formatTime(current));
-              setCurrentProgress(Math.round((current / total) * 100));
+              const progressPercent = Math.round((current / total) * 100);
+              setCurrentProgress(progressPercent);
             }
           }, 1000);
+
+          // 진도 추적 시작
+          if (memberId && lectureId) {
+            progressTracker.startProgressTracking(() => {
+              return playerRef.current?.getCurrentTime() || 0;
+            });
+          }
         },
         onStateChange: (event: any) => {
-          setIsPlaying(event.data === window.YT.PlayerState.PLAYING);
+          const wasPlaying = isPlaying;
+          const nowPlaying = event.data === window.YT.PlayerState.PLAYING;
+          
+          setIsPlaying(nowPlaying);
+          
+          // 일시정지 시 진도 저장
+          if (wasPlaying && !nowPlaying && memberId && lectureId) {
+            const currentTime = playerRef.current?.getCurrentTime() || 0;
+            progressTracker.onVideoPause(currentTime);
+          }
+          
+          // 비디오 종료 시 처리
+          if (event.data === window.YT.PlayerState.ENDED && memberId && lectureId) {
+            const finalTime = playerRef.current?.getDuration() || 0;
+            progressTracker.onVideoEnd(finalTime);
+          }
         }
       }
     });

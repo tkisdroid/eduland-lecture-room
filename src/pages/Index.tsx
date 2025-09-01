@@ -6,9 +6,14 @@ import { LectureTabs } from "@/components/LectureTabs";
 import { RecentCourses } from "@/components/RecentCourses";
 import { InstructorInfo } from "@/components/InstructorInfo";
 import { uiLabels } from "@/data/uiLabels";
+import { useUserProgress } from "@/hooks/useUserProgress";
+import { curriculumData } from "@/data/curriculum";
 import { Menu, X } from "lucide-react";
 
 const Index = () => {
+  // TODO: 실제 환경에서는 인증된 사용자의 ID를 사용
+  const mockMemberId = "user_001"; // 임시 사용자 ID
+  
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [currentLecture, setCurrentLecture] = useState({
@@ -24,7 +29,36 @@ const Index = () => {
     totalDuration: "01:57:30"
   });
 
+  const { getLastWatchedLectureId, getLectureProgress } = useUserProgress(mockMemberId);
+
   const [videoKey, setVideoKey] = useState(0); // Force video refresh
+
+  // 마지막 시청 강의 로드
+  const loadLastWatchedLecture = () => {
+    const lastWatchedId = getLastWatchedLectureId();
+    if (lastWatchedId) {
+      // curriculumData에서 해당 강의 찾기
+      for (const subject of curriculumData) {
+        for (const section of subject.sections) {
+          const foundLecture = section.lectures.find(lecture => lecture.id === lastWatchedId);
+          if (foundLecture) {
+            const savedProgress = getLectureProgress(lastWatchedId);
+            setCurrentLecture({
+              ...foundLecture,
+              lectureNumber: foundLecture.number,
+              subject: subject.name,
+              section: section.name,
+              progress: savedProgress?.progress || 0,
+              totalLectures: section.lectures.length,
+              totalDuration: "01:57:30" // TODO: 실제 총 시간 계산
+            });
+            console.log(`Loaded last watched lecture: ${foundLecture.title}`);
+            return;
+          }
+        }
+      }
+    }
+  };
 
   const handleLectureSelect = (lecture: any) => {
     setCurrentLecture(lecture);
@@ -32,6 +66,11 @@ const Index = () => {
     // Scroll to top when selecting a new lecture
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // 컴포넌트 마운트 시 마지막 시청 강의 로드
+  useEffect(() => {
+    loadLastWatchedLecture();
+  }, [getLastWatchedLectureId, getLectureProgress]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -100,11 +139,13 @@ const Index = () => {
                 : 'relative w-full'
             }`}>
               <VideoPlayer 
-                key={videoKey} // Force complete re-render when lecture changes
+                key={videoKey}
                 videoUrl={currentLecture.videoUrl}
                 title={currentLecture.title}
                 progress={currentLecture.progress}
                 compact={isScrolled}
+                memberId={mockMemberId}
+                lectureId={currentLecture.id}
               />
               
               {/* Video Meta Info - Hide when scrolled */}
