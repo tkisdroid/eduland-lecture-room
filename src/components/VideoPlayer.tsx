@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Play, Pause, Rewind, FastForward, Settings } from "lucide-react";
+import { uiLabels, defaultValues } from "@/data/uiLabels";
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -32,7 +33,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   const getVideoId = (url: string) => {
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const match = url.match(regex);
-    return match ? match[1] : 'dQw4w9WgXcQ'; // fallback to a working video ID
+    return match ? match[1] : defaultValues.video.fallbackVideoId;
   };
 
   const videoId = getVideoId(videoUrl);
@@ -314,7 +315,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
               >
                 <option value={0.5}>0.5x</option>
                 <option value={0.75}>0.75x</option>
-                <option value={1}>표준</option>
+                <option value={1}>{uiLabels.videoPlayer.playback.standard}</option>
                 <option value={1.25}>1.25x</option>
                 <option value={1.5}>1.5x</option>
                 <option value={2}>2x</option>
@@ -338,8 +339,8 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
               />
             </div>
             <div className="flex justify-between items-center mt-1">
-              <span className="text-xs text-muted-foreground">진도율 {currentProgress}%</span>
-              <span className="chip-meta">이어보기 가능</span>
+              <span className="text-xs text-muted-foreground">{uiLabels.videoPlayer.playback.progress} {currentProgress}%</span>
+              <span className="chip-meta">{uiLabels.videoPlayer.playback.continuousWatchingAvailable}</span>
             </div>
           </div>
         </div>

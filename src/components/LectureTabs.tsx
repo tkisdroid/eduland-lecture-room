@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Copy, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getLectureStrategy, getLectureSummary, getLectureQuiz } from "@/data/lectureContent";
+import { uiLabels } from "@/data/uiLabels";
 
 export const LectureTabs = ({ currentLectureId = "1" }: { currentLectureId?: string }) => {
   const [activeTab, setActiveTab] = useState("strategy");
@@ -78,11 +79,11 @@ export const LectureTabs = ({ currentLectureId = "1" }: { currentLectureId?: str
         <div className="flex gap-2">
           <button onClick={resetQuiz} className="btn-lecture bg-muted text-muted-foreground">
             <RotateCcw className="w-3 h-3 mr-1" />
-            리셋
+            {uiLabels.actions.reset}
           </button>
           {!showResults && (
             <button onClick={submitQuiz} className="btn-lecture">
-              제출
+              {uiLabels.actions.submit}
             </button>
           )}
         </div>

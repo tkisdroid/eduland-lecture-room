@@ -28,7 +28,23 @@
 - **데이터**: `instructorsData`
 - **설명**: 강사 프로필, 전문분야, 경력 정보
 
-## 🛠️ MariaDB 연동 작업 목록
+          # 추가 데이터 분리 작업
+
+## 🎯 모든 하드코딩된 데이터 완전 분리 완료!
+
+새로 생성된 데이터 파일들:
+
+### 5. 강의별 메타데이터
+- **파일**: `src/data/lectureMetadata.ts`
+- **인터페이스**: `LectureMetadata`
+- **데이터**: `lectureMetadataData`  
+- **설명**: 각 강의의 과목, 섹션, 총 강의 수, 총 시간 메타정보
+
+### 6. UI 라벨 및 텍스트
+- **파일**: `src/data/uiLabels.ts`
+- **인터페이스**: `UILabels`
+- **데이터**: `uiLabels`, `subjectCategories`, `defaultValues`
+- **설명**: 모든 UI 텍스트, 카테고리 분류, 기본값들
 
 ### Phase 1: 데이터베이스 설계
 ```sql
@@ -98,7 +114,32 @@ CREATE TABLE quiz_questions (
     FOREIGN KEY (lecture_id) REFERENCES lectures(id)
 );
 
--- 최근 강의/추천 강의
+-- 강의 메타데이터 테이블
+CREATE TABLE lecture_metadata (
+    id VARCHAR(50) PRIMARY KEY,
+    lecture_id VARCHAR(50),
+    subject VARCHAR(100),
+    section VARCHAR(100), 
+    total_lectures INT,
+    total_duration VARCHAR(20),
+    FOREIGN KEY (lecture_id) REFERENCES lectures(id)
+);
+
+-- UI 라벨 테이블 (다국어 지원용)
+CREATE TABLE ui_labels (
+    id VARCHAR(50) PRIMARY KEY,
+    label_key VARCHAR(100) UNIQUE,
+    korean_text TEXT,
+    english_text TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 기본값 설정 테이블
+CREATE TABLE system_settings (
+    setting_key VARCHAR(100) PRIMARY KEY,
+    setting_value TEXT,
+    description TEXT
+);
 CREATE TABLE recent_courses (
     id VARCHAR(50) PRIMARY KEY,
     title VARCHAR(200) NOT NULL,

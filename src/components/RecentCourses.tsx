@@ -1,5 +1,6 @@
 import { Clock, Users, Star } from "lucide-react";
 import { recentCoursesData } from "@/data/recentCourses";
+import { uiLabels } from "@/data/uiLabels";
 
 export const RecentCourses = () => {
   return (
@@ -24,12 +25,12 @@ export const RecentCourses = () => {
               <div className="absolute top-2 left-2 flex gap-1">
                 {course.isNew && (
                   <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                    신규
+                    {uiLabels.courseCard.badges.new}
                   </span>
                 )}
                 {course.isPopular && (
                   <span className="bg-accent text-white text-xs px-2 py-1 rounded-full font-medium">
-                    인기
+                    {uiLabels.courseCard.badges.popular}
                   </span>
                 )}
               </div>
@@ -59,11 +60,11 @@ export const RecentCourses = () => {
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Clock className="w-3 h-3" />
-                  <span>총 {course.totalDuration}</span>
+                  <span>{uiLabels.courseCard.duration.total} {course.totalDuration}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="w-3 h-3" />
-                  <span>{course.studentCount}명</span>
+                  <span>{course.studentCount}{uiLabels.courseCard.duration.students}</span>
                 </div>
               </div>
 
@@ -77,7 +78,7 @@ export const RecentCourses = () => {
                     />
                   </div>
                   <span className="text-xs text-muted-foreground mt-1 block">
-                    진도율 {course.progress}%
+                    {uiLabels.videoPlayer.playback.progress} {course.progress}%
                   </span>
                 </div>
               )}

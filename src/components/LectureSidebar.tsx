@@ -2,6 +2,8 @@ import { useState } from "react";
 import { X, Play, ChevronDown, ChevronRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { curriculumData } from "@/data/curriculum";
+import { uiLabels, subjectCategories } from "@/data/uiLabels";
+import { getLectureMetadata, getDefaultLectureMetadata } from "@/data/lectureMetadata";
 
 interface LectureSidebarProps {
   isOpen: boolean;
@@ -41,6 +43,9 @@ export const LectureSidebar = ({
     const isCurrentLecture = currentLecture.id === lecture.id;
     const isCompleted = lecture.progress >= 90;
     
+    // 강의 메타데이터 가져오기
+    const metadata = getLectureMetadata(lecture.id) || getDefaultLectureMetadata();
+    
     return (
       <div 
         key={lecture.id}
@@ -53,14 +58,14 @@ export const LectureSidebar = ({
         onClick={() => onLectureSelect({
           id: lecture.id,
           title: lecture.title,
-          subject: "민법 및 민사특별법",
-          section: "핵심개념입문",
+          subject: metadata.subject,
+          section: metadata.section,
           lectureNumber: lecture.number,
           duration: lecture.duration,
           videoUrl: lecture.videoUrl,
           progress: lecture.progress,
-          totalLectures: 3,
-          totalDuration: "01:57:30"
+          totalLectures: metadata.totalLectures,
+          totalDuration: metadata.totalDuration
         })}
       >
         {/* Lecture number */}
@@ -97,19 +102,19 @@ export const LectureSidebar = ({
             onLectureSelect({
               id: lecture.id,
               title: lecture.title,
-              subject: "민법 및 민사특별법",
-              section: "핵심개념입문",
+              subject: metadata.subject,
+              section: metadata.section,
               lectureNumber: lecture.number,
               duration: lecture.duration,
               videoUrl: lecture.videoUrl,
               progress: lecture.progress,
-              totalLectures: 3,
-              totalDuration: "01:57:30"
+              totalLectures: metadata.totalLectures,
+              totalDuration: metadata.totalDuration
             });
           }}
         >
           <Play className="w-3 h-3 mr-1 inline" />
-          {lecture.progress > 0 ? "이어보기" : "재생"}
+          {lecture.progress > 0 ? uiLabels.videoPlayer.playback.continueWatching : uiLabels.videoPlayer.playback.play}
         </button>
       </div>
     );
@@ -124,7 +129,7 @@ export const LectureSidebar = ({
       )}>
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-sidebar-navy-light">
-          <h2 className="text-xl font-bold text-sidebar-text-primary">나의 강의실</h2>
+          <h2 className="text-xl font-bold text-sidebar-text-primary">{uiLabels.sidebar.myClassroom}</h2>
           <button 
             onClick={onClose}
             className="lg:hidden p-1 text-sidebar-text-secondary hover:text-sidebar-text-primary transition-colors"
@@ -139,10 +144,10 @@ export const LectureSidebar = ({
           <div className="mb-8">
             <div className="mb-4 pb-2 border-b border-sidebar-navy-light">
               <h3 className="text-sm font-semibold text-sidebar-text-secondary uppercase tracking-wider">
-                1차 시험과목
+                {uiLabels.sidebar.primarySubjects}
               </h3>
             </div>
-            {curriculumData.slice(0, 2).map(subject => (
+            {curriculumData.filter(subject => subjectCategories.primary.includes(subject.name)).map(subject => (
               <div key={subject.id} className="mb-4">
                 {/* Subject Header */}
                 <button
@@ -189,7 +194,7 @@ export const LectureSidebar = ({
                               section.lectures.map(renderLecture)
                             ) : (
                               <div className="p-3 text-sm text-sidebar-text-muted text-center">
-                                강의가 준비 중입니다.
+                                {uiLabels.sidebar.lecturesInPreparation}
                               </div>
                             )}
                           </div>
@@ -225,7 +230,7 @@ export const LectureSidebar = ({
                                       specialSection.lectures.map(renderLecture)
                                     ) : (
                                       <div className="p-3 text-sm text-sidebar-text-muted text-center">
-                                        강의가 준비 중입니다.
+                                        {uiLabels.sidebar.lecturesInPreparation}
                                       </div>
                                     )}
                                   </div>
@@ -246,10 +251,10 @@ export const LectureSidebar = ({
           <div className="mb-6">
             <div className="mb-4 pb-2 border-b border-sidebar-navy-light">
               <h3 className="text-sm font-semibold text-sidebar-text-secondary uppercase tracking-wider">
-                2차 시험과목
+                {uiLabels.sidebar.secondarySubjects}
               </h3>
             </div>
-            {curriculumData.slice(2).map(subject => (
+            {curriculumData.filter(subject => subjectCategories.secondary.includes(subject.name)).map(subject => (
               <div key={subject.id} className="mb-4">
                 {/* Subject Header */}
                 <button
@@ -296,7 +301,7 @@ export const LectureSidebar = ({
                               section.lectures.map(renderLecture)
                             ) : (
                               <div className="p-3 text-sm text-sidebar-text-muted text-center">
-                                강의가 준비 중입니다.
+                                {uiLabels.sidebar.lecturesInPreparation}
                               </div>
                             )}
                           </div>

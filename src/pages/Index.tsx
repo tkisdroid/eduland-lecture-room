@@ -5,6 +5,7 @@ import { LectureHeader } from "@/components/LectureHeader";
 import { LectureTabs } from "@/components/LectureTabs";
 import { RecentCourses } from "@/components/RecentCourses";
 import { InstructorInfo } from "@/components/InstructorInfo";
+import { uiLabels } from "@/data/uiLabels";
 import { Menu, X } from "lucide-react";
 
 const Index = () => {
@@ -139,7 +140,7 @@ const Index = () => {
             {/* Footer Placeholder */}
             <footer id="footer-slot" className="mt-16 py-8 border-t border-border">
               <div className="text-center text-muted-foreground text-sm">
-                Eduland 공인중개사 강의실 - Footer will be inserted here
+                {uiLabels.footer.placeholder}
               </div>
             </footer>
           </div>
