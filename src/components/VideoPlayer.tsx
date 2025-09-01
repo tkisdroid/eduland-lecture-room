@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Play, Pause, SkipBack, SkipForward, Settings } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Play, Pause, Rewind, FastForward, Settings } from "lucide-react";
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -8,11 +8,25 @@ interface VideoPlayerProps {
   compact?: boolean;
 }
 
+// YouTube Player interface
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
+
 export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState("15:30");
-  const [totalTime, setTotalTime] = useState("36:30");
+  const [currentTime, setCurrentTime] = useState("0:00");
+  const [totalTime, setTotalTime] = useState("0:00");
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [currentProgress, setCurrentProgress] = useState(progress);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const playerRef = useRef<any>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
   
   // Extract video ID from various YouTube URL formats
   const getVideoId = (url: string) => {
@@ -22,50 +36,249 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
   };
 
   const videoId = getVideoId(videoUrl);
-  
-  // Convert YouTube URL to embed format
-  const getEmbedUrl = () => {
-    return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1&iv_load_policy=3&playsinline=1&autoplay=1&cc_load_policy=0&fs=1&hl=ko`;
+
+  // Format time from seconds to mm:ss
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  // Basic control handlers (for display purposes)
+  // Load YouTube API
+  useEffect(() => {
+    if (!window.YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
+      window.onYouTubeIframeAPIReady = () => {
+        initializePlayer();
+      };
+    } else {
+      initializePlayer();
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [videoId]);
+
+  // Keyboard controls (spacebar for play/pause)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Space' && event.target === document.body) {
+        event.preventDefault();
+        handlePlayPause();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isPlaying]);
+
+  // Touch and mouse controls
+  useEffect(() => {
+    const videoContainer = videoContainerRef.current;
+    if (!videoContainer) return;
+
+    const handleTouch = (event: TouchEvent) => {
+      event.preventDefault();
+      handlePlayPause();
+    };
+
+    const handleClick = (event: MouseEvent) => {
+      event.preventDefault();
+      handlePlayPause();
+    };
+
+    videoContainer.addEventListener('touchstart', handleTouch);
+    videoContainer.addEventListener('click', handleClick);
+    
+    return () => {
+      videoContainer.removeEventListener('touchstart', handleTouch);
+      videoContainer.removeEventListener('click', handleClick);
+    };
+  }, [isPlaying]);
+
+  // Intersection Observer for mobile scroll minimization
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // Only enable on mobile devices
+    const isMobile = window.innerWidth <= 768;
+    if (!isMobile) return;
+
+    const videoContainer = videoContainerRef.current;
+    if (!videoContainer) return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // When video is less than 30% visible, minimize it
+          if (entry.intersectionRatio < 0.3) {
+            setIsMinimized(true);
+          } else {
+            setIsMinimized(false);
+          }
+        });
+      },
+      {
+        threshold: [0, 0.3, 0.5, 1]
+      }
+    );
+
+    observerRef.current.observe(videoContainer);
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  // Cleanup observer on unmount
+  useEffect(() => {
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  const initializePlayer = () => {
+    if (playerRef.current) {
+      playerRef.current.destroy();
+    }
+
+    playerRef.current = new window.YT.Player('youtube-player', {
+      videoId: videoId,
+      playerVars: {
+        autoplay: 1,
+        mute: 1,
+        loop: 1,
+        color: 'white',
+        controls: 0,
+        modestbranding: 1,
+        playsinline: 1,
+        rel: 0,
+        enablejsapi: 1,
+        playlist: videoId,
+        iv_load_policy: 3,
+        cc_load_policy: 0,
+        fs: 1,
+        disablekb: 1
+      },
+      events: {
+        onReady: (event: any) => {
+          const duration = event.target.getDuration();
+          setTotalTime(formatTime(duration));
+          
+          // Start time update interval
+          intervalRef.current = setInterval(() => {
+            if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') {
+              const current = playerRef.current.getCurrentTime();
+              const total = playerRef.current.getDuration();
+              setCurrentTime(formatTime(current));
+              setCurrentProgress(Math.round((current / total) * 100));
+            }
+          }, 1000);
+        },
+        onStateChange: (event: any) => {
+          setIsPlaying(event.data === window.YT.PlayerState.PLAYING);
+        }
+      }
+    });
+  };
+
+  // Control handlers with YouTube API integration
   const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
+    if (!playerRef.current) return;
+    
+    if (isPlaying) {
+      playerRef.current.pauseVideo();
+    } else {
+      playerRef.current.playVideo();
+    }
   };
 
+  // Skip backward 10 seconds
   const handleSkipBack = () => {
-    // Skip functionality would require YouTube API integration
-    console.log("Skip back 10 seconds");
+    if (!playerRef.current) return;
+    const currentTime = playerRef.current.getCurrentTime();
+    playerRef.current.seekTo(Math.max(0, currentTime - 10));
   };
 
+  // Skip forward 10 seconds  
   const handleSkipForward = () => {
-    // Skip functionality would require YouTube API integration
-    console.log("Skip forward 10 seconds");
+    if (!playerRef.current) return;
+    const currentTime = playerRef.current.getCurrentTime();
+    const duration = playerRef.current.getDuration();
+    playerRef.current.seekTo(Math.min(duration, currentTime + 10));
   };
 
   const handlePlaybackRateChange = (rate: number) => {
     setPlaybackRate(rate);
-    // Playback rate change would require YouTube API integration
-    console.log("Playback rate changed to:", rate);
+    if (playerRef.current) {
+      playerRef.current.setPlaybackRate(rate);
+    }
+  };
+
+  // Progress bar click handler
+  const handleProgressClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!playerRef.current) return;
+    
+    const progressBar = event.currentTarget;
+    const rect = progressBar.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const progressBarWidth = rect.width;
+    
+    // Ensure click position is within bounds
+    const clampedX = Math.max(0, Math.min(clickX, progressBarWidth));
+    const clickPercent = (clampedX / progressBarWidth) * 100;
+    
+    const duration = playerRef.current.getDuration();
+    if (duration && duration > 0) {
+      const seekTime = (clickPercent / 100) * duration;
+      playerRef.current.seekTo(seekTime, true); // true for allowSeekAhead
+      setCurrentProgress(Math.round(clickPercent)); // Round to remove decimals
+    }
   };
 
   return (
     <div className="space-y-4">
       {/* Video Player Container */}
-      <div className="aspect-video bg-black rounded-lg overflow-hidden">
-        <iframe
-          key={videoId} // Force re-render when video changes
-          src={getEmbedUrl()}
-          title={title}
-          className="w-full h-full"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        />
+      <div 
+        ref={videoContainerRef}
+        className={`yt-wrapper bg-black rounded-lg overflow-hidden cursor-pointer select-none transition-all duration-300 ease-in-out ${
+          isMinimized 
+            ? 'fixed top-4 right-4 w-48 h-28 z-50 shadow-2xl md:relative md:w-full md:h-auto md:shadow-none md:top-auto md:right-auto'
+            : 'relative w-full'
+        }`}
+      >
+        <div className="yt-frame-container">
+          <div id="youtube-player"></div>
+        </div>
+        
+        {/* Minimize/Maximize button - only visible when minimized on mobile */}
+        {isMinimized && (
+          <button
+            onClick={() => setIsMinimized(false)}
+            className="absolute top-1 left-1 bg-black/50 text-white rounded p-1 hover:bg-black/70 transition-colors md:hidden"
+          >
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 16a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+            </svg>
+          </button>
+        )}
       </div>
 
-      {/* Custom Control Bar - Hide in compact mode */}
-      {!compact && (
+      {/* Custom Control Bar - Hide in compact mode or when minimized */}
+      {!compact && !isMinimized && (
         <div className="bg-card border border-border rounded-lg p-2 sm:p-4">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1 sm:gap-3 flex-1 min-w-0">
@@ -73,7 +286,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
                 className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent-secondary rounded-lg transition-colors"
                 onClick={handleSkipBack}
               >
-                <SkipBack className="w-4 h-4 sm:w-5 sm:h-5" />
+                <Rewind className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button 
                 className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent rounded-lg transition-colors"
@@ -85,7 +298,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
                 className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent-secondary rounded-lg transition-colors"
                 onClick={handleSkipForward}
               >
-                <SkipForward className="w-4 h-4 sm:w-5 sm:h-5" />
+                <FastForward className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
                 {currentTime} / {totalTime}
@@ -115,14 +328,17 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false }: Vide
 
           {/* Progress Bar */}
           <div className="mt-3">
-            <div className="progress-bar">
+            <div 
+              className="progress-bar cursor-pointer hover:opacity-80 transition-opacity" 
+              onClick={handleProgressClick}
+            >
               <div 
                 className="progress-fill" 
-                style={{ width: `${progress}%` }}
+                style={{ width: `${currentProgress}%` }}
               />
             </div>
             <div className="flex justify-between items-center mt-1">
-              <span className="text-xs text-muted-foreground">진도율 {progress}%</span>
+              <span className="text-xs text-muted-foreground">진도율 {currentProgress}%</span>
               <span className="chip-meta">이어보기 가능</span>
             </div>
           </div>

@@ -5,13 +5,23 @@ import { LectureHeader } from "@/components/LectureHeader";
 import { LectureTabs } from "@/components/LectureTabs";
 import { RecentCourses } from "@/components/RecentCourses";
 import { InstructorInfo } from "@/components/InstructorInfo";
-import { defaultLectureData } from "@/data/defaultLecture";
 import { Menu, X } from "lucide-react";
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [currentLecture, setCurrentLecture] = useState(defaultLectureData);
+  const [currentLecture, setCurrentLecture] = useState({
+    id: "1",
+    title: "소유권과 점유권의 기본 개념",
+    subject: "민법 및 민사특별법",
+    section: "핵심개념입문", 
+    lectureNumber: 1,
+    duration: "36:30",
+    videoUrl: "https://www.youtube.com/embed/c0gFbdrBLX0",
+    progress: 45,
+    totalLectures: 3,
+    totalDuration: "01:57:30"
+  });
 
   const [videoKey, setVideoKey] = useState(0); // Force video refresh
 
