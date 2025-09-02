@@ -130,7 +130,7 @@ export const LectureSidebar = ({
       {/* Sidebar */}
       <aside className={cn(
         "fixed top-14 left-0 z-40 h-[calc(100vh-3.5rem)] overflow-y-auto transition-all duration-300 lg:translate-x-0",
-        collapsed ? "w-16 bg-sidebar-navy border-r border-sidebar-navy-light" : "w-[336px] bg-sidebar-navy",
+        collapsed ? "w-16 bg-slate-900 border-r border-slate-700" : "w-[336px] bg-sidebar-navy",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Header */}

@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause, Rewind, FastForward, Settings, Maximize } from "lucide-react";
+import { Play, Pause, Rewind, FastForward, Settings, Maximize, Volume2, VolumeX } from "lucide-react";
 import { uiLabels, defaultValues } from "@/data/uiLabels";
 import { useVideoProgress } from "@/hooks/useVideoProgress";
 
@@ -30,6 +30,8 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false, member
   const [isMinimized, setIsMinimized] = useState(false);
   const [videoDuration, setVideoDuration] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [volume, setVolume] = useState(50);
+  const [isMuted, setIsMuted] = useState(false);
   const playerRef = useRef<any>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoContainerRef = useRef<HTMLDivElement>(null);
@@ -280,6 +282,36 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false, member
     }
   };
 
+  // 볼륨 조절
+  const handleVolumeChange = (newVolume: number) => {
+    setVolume(newVolume);
+    if (playerRef.current) {
+      playerRef.current.setVolume(newVolume);
+      if (newVolume === 0) {
+        setIsMuted(true);
+      } else {
+        setIsMuted(false);
+      }
+    }
+  };
+
+  // 음소거 토글
+  const handleMuteToggle = () => {
+    if (playerRef.current) {
+      if (isMuted) {
+        playerRef.current.unMute();
+        setIsMuted(false);
+        if (volume === 0) {
+          setVolume(50);
+          playerRef.current.setVolume(50);
+        }
+      } else {
+        playerRef.current.mute();
+        setIsMuted(true);
+      }
+    }
+  };
+
   // 전체화면 토글
   const handleFullscreen = () => {
     const container = videoContainerRef.current;
@@ -418,6 +450,28 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false, member
                 <option value={1.5}>1.5x</option>
                 <option value={2}>2x</option>
               </select>
+
+              {/* 볼륨 조절 */}
+              <div className="flex items-center gap-2">
+                <button 
+                  className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent-secondary rounded-lg transition-colors"
+                  onClick={handleMuteToggle}
+                  title={isMuted ? "음소거 해제" : "음소거"}
+                >
+                  {isMuted ? <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" /> : <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />}
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={isMuted ? 0 : volume}
+                  onChange={(e) => handleVolumeChange(Number(e.target.value))}
+                  className="w-16 sm:w-20 h-1 bg-muted rounded-lg appearance-none cursor-pointer slider"
+                  style={{
+                    background: `linear-gradient(to right, hsl(var(--accent)) 0%, hsl(var(--accent)) ${isMuted ? 0 : volume}%, hsl(var(--muted)) ${isMuted ? 0 : volume}%, hsl(var(--muted)) 100%)`
+                  }}
+                />
+              </div>
 
               {/* 전체화면 버튼 */}
               <button 
