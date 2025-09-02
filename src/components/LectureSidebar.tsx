@@ -138,10 +138,11 @@ export const LectureSidebar = ({
             <h2 className="text-xl font-bold text-sidebar-text-primary">{uiLabels.sidebar.myClassroom}</h2>
           )}
           <div className="flex items-center gap-2">
-            {/* Collapse/Expand button - always visible on desktop */}
+            {/* Collapse/Expand button - visible on all screens */}
             <button 
               onClick={onToggleCollapse}
-              className="hidden lg:block p-1 text-sidebar-text-secondary hover:text-sidebar-text-primary transition-colors"
+              className="p-1 text-sidebar-text-secondary hover:text-sidebar-text-primary transition-colors"
+              aria-label={collapsed ? "사이드바 펼치기" : "사이드바 접기"}
               title={collapsed ? "사이드바 펼치기" : "사이드바 접기"}
             >
               {collapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}

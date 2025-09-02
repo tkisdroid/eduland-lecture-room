@@ -127,7 +127,7 @@ const Index = () => {
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           collapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
           currentLecture={currentLecture}
           onLectureSelect={handleLectureSelect}
         />
