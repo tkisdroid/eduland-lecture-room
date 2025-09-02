@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { X, Play, ChevronDown, ChevronRight, Check, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -128,8 +129,8 @@ export const LectureSidebar = ({
     <>
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-14 left-0 z-40 h-[calc(100vh-3.5rem)] bg-sidebar-navy overflow-y-auto transition-all duration-300 lg:translate-x-0",
-        collapsed ? "w-16" : "w-[336px]",
+        "fixed top-14 left-0 z-40 h-[calc(100vh-3.5rem)] overflow-y-auto transition-all duration-300 lg:translate-x-0",
+        collapsed ? "w-16 bg-sidebar-navy border-r border-sidebar-navy-light" : "w-[336px] bg-sidebar-navy",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Header */}
@@ -158,192 +159,183 @@ export const LectureSidebar = ({
         </div>
 
         {/* Curriculum Navigation */}
-        <div className={cn("transition-all duration-300", collapsed ? "p-2" : "p-6")}>
-          {collapsed && (
-            <div className="text-center">
-              <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center mx-auto mb-4">
-                <span className="text-accent-foreground text-sm font-bold">강</span>
+        {!collapsed && (
+          <div className="p-6">
+            {/* 1차 시험과목 */}
+            <div className="mb-8">
+              <div className="mb-4 pb-2 border-b border-sidebar-navy-light">
+                <h3 className="text-sm font-semibold text-sidebar-text-secondary uppercase tracking-wider">
+                  {uiLabels.sidebar.primarySubjects}
+                </h3>
               </div>
-            </div>
-          )}
-          {!collapsed && (
-            <>
-              {/* 1차 시험과목 */}
-              <div className="mb-8">
-                <div className="mb-4 pb-2 border-b border-sidebar-navy-light">
-                  <h3 className="text-sm font-semibold text-sidebar-text-secondary uppercase tracking-wider">
-                    {uiLabels.sidebar.primarySubjects}
-                  </h3>
-                </div>
-                {curriculumData.filter(subject => subjectCategories.primary.includes(subject.name)).map(subject => (
-                  <div key={subject.id} className="mb-4">
-                    {/* Subject Header */}
-                    <button
-                      onClick={() => toggleSubject(subject.id)}
-                      className="w-full flex items-center justify-between p-3 text-base font-bold text-sidebar-text-primary hover:bg-sidebar-hover rounded-lg transition-colors"
-                    >
-                      <span>{subject.name}</span>
-                      {expandedSubjects.includes(subject.id) ? (
-                        <ChevronDown className="w-4 h-4 text-sidebar-text-secondary" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4 text-sidebar-text-secondary" />
-                      )}
-                    </button>
+              {curriculumData.filter(subject => subjectCategories.primary.includes(subject.name)).map(subject => (
+                <div key={subject.id} className="mb-4">
+                  {/* Subject Header */}
+                  <button
+                    onClick={() => toggleSubject(subject.id)}
+                    className="w-full flex items-center justify-between p-3 text-base font-bold text-sidebar-text-primary hover:bg-sidebar-hover rounded-lg transition-colors"
+                  >
+                    <span>{subject.name}</span>
+                    {expandedSubjects.includes(subject.id) ? (
+                      <ChevronDown className="w-4 h-4 text-sidebar-text-secondary" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-sidebar-text-secondary" />
+                    )}
+                  </button>
 
-                    {/* Sections */}
-                    {expandedSubjects.includes(subject.id) && (
-                      <div className="mt-3 ml-4 space-y-2 animate-fade-in">
-                        {subject.sections.map(section => (
-                          <div key={section.id}>
-                            {/* Section Header */}
-                            <button
-                              onClick={() => toggleSection(section.id)}
-                              className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
-                            >
-                              <div className="flex items-center gap-2">
-                                <span>{section.name}</span>
-                                {section.lectures.length > 0 && (
-                                  <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
-                                    {section.lectures.length}개
-                                  </span>
-                                )}
-                              </div>
-                              {expandedSections.includes(section.id) ? (
-                                <ChevronDown className="w-4 h-4" />
-                              ) : (
-                                <ChevronRight className="w-4 h-4" />
+                  {/* Sections */}
+                  {expandedSubjects.includes(subject.id) && (
+                    <div className="mt-3 ml-4 space-y-2 animate-fade-in">
+                      {subject.sections.map(section => (
+                        <div key={section.id}>
+                          {/* Section Header */}
+                          <button
+                            onClick={() => toggleSection(section.id)}
+                            className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span>{section.name}</span>
+                              {section.lectures.length > 0 && (
+                                <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
+                                  {section.lectures.length}개
+                                </span>
                               )}
-                            </button>
-
-                            {/* Lectures */}
-                            {expandedSections.includes(section.id) && (
-                              <div className="mt-2 ml-4 space-y-1 animate-fade-in">
-                                {section.lectures.length > 0 ? (
-                                  section.lectures.map(renderLecture)
-                                ) : (
-                                  <div className="p-3 text-sm text-sidebar-text-muted text-center">
-                                    {uiLabels.sidebar.lecturesInPreparation}
-                                  </div>
-                                )}
-                              </div>
+                            </div>
+                            {expandedSections.includes(section.id) ? (
+                              <ChevronDown className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
                             )}
+                          </button>
 
-                            {/* Special sections after 기출문제풀이과정 */}
-                            {section.id === "기출문제풀이과정" && subject.specialSections && (
-                              <div className="mt-2 space-y-2">
-                                {subject.specialSections.map(specialSection => (
-                                  <div key={specialSection.id}>
-                                    <button
-                                      onClick={() => toggleSection(specialSection.id)}
-                                      className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        <span>{specialSection.name}</span>
-                                        {specialSection.lectures.length > 0 && (
-                                          <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
-                                            {specialSection.lectures.length}개
-                                          </span>
-                                        )}
-                                      </div>
-                                      {expandedSections.includes(specialSection.id) ? (
-                                        <ChevronDown className="w-4 h-4" />
-                                      ) : (
-                                        <ChevronRight className="w-4 h-4" />
+                          {/* Lectures */}
+                          {expandedSections.includes(section.id) && (
+                            <div className="mt-2 ml-4 space-y-1 animate-fade-in">
+                              {section.lectures.length > 0 ? (
+                                section.lectures.map(renderLecture)
+                              ) : (
+                                <div className="p-3 text-sm text-sidebar-text-muted text-center">
+                                  {uiLabels.sidebar.lecturesInPreparation}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Special sections after 기출문제풀이과정 */}
+                          {section.id === "기출문제풀이과정" && subject.specialSections && (
+                            <div className="mt-2 space-y-2">
+                              {subject.specialSections.map(specialSection => (
+                                <div key={specialSection.id}>
+                                  <button
+                                    onClick={() => toggleSection(specialSection.id)}
+                                    className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <span>{specialSection.name}</span>
+                                      {specialSection.lectures.length > 0 && (
+                                        <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
+                                          {specialSection.lectures.length}개
+                                        </span>
                                       )}
-                                    </button>
-                                    
-                                    {expandedSections.includes(specialSection.id) && (
-                                      <div className="mt-2 ml-4 space-y-1 animate-fade-in">
-                                        {specialSection.lectures.length > 0 ? (
-                                          specialSection.lectures.map(renderLecture)
-                                        ) : (
-                                          <div className="p-3 text-sm text-sidebar-text-muted text-center">
-                                            {uiLabels.sidebar.lecturesInPreparation}
-                                          </div>
-                                        )}
-                                      </div>
+                                    </div>
+                                    {expandedSections.includes(specialSection.id) ? (
+                                      <ChevronDown className="w-4 h-4" />
+                                    ) : (
+                                      <ChevronRight className="w-4 h-4" />
                                     )}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* 2차 시험과목 */}
-              <div className="mb-6">
-                <div className="mb-4 pb-2 border-b border-sidebar-navy-light">
-                  <h3 className="text-sm font-semibold text-sidebar-text-secondary uppercase tracking-wider">
-                    {uiLabels.sidebar.secondarySubjects}
-                  </h3>
+                                  </button>
+                                  
+                                  {expandedSections.includes(specialSection.id) && (
+                                    <div className="mt-2 ml-4 space-y-1 animate-fade-in">
+                                      {specialSection.lectures.length > 0 ? (
+                                        specialSection.lectures.map(renderLecture)
+                                      ) : (
+                                        <div className="p-3 text-sm text-sidebar-text-muted text-center">
+                                          {uiLabels.sidebar.lecturesInPreparation}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                {curriculumData.filter(subject => subjectCategories.secondary.includes(subject.name)).map(subject => (
-                  <div key={subject.id} className="mb-4">
-                    {/* Subject Header */}
-                    <button
-                      onClick={() => toggleSubject(subject.id)}
-                      className="w-full flex items-center justify-between p-3 text-base font-bold text-sidebar-text-primary hover:bg-sidebar-hover rounded-lg transition-colors"
-                    >
-                      <span>{subject.name}</span>
-                      {expandedSubjects.includes(subject.id) ? (
-                        <ChevronDown className="w-4 h-4 text-sidebar-text-secondary" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4 text-sidebar-text-secondary" />
-                      )}
-                    </button>
+              ))}
+            </div>
 
-                    {/* Sections */}
-                    {expandedSubjects.includes(subject.id) && (
-                      <div className="mt-3 ml-4 space-y-2 animate-fade-in">
-                        {subject.sections.map(section => (
-                          <div key={section.id}>
-                            {/* Section Header */}
-                            <button
-                              onClick={() => toggleSection(section.id)}
-                              className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
-                            >
-                              <div className="flex items-center gap-2">
-                                <span>{section.name}</span>
-                                {section.lectures.length > 0 && (
-                                  <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
-                                    {section.lectures.length}개
-                                  </span>
-                                )}
-                              </div>
-                              {expandedSections.includes(section.id) ? (
-                                <ChevronDown className="w-4 h-4" />
-                              ) : (
-                                <ChevronRight className="w-4 h-4" />
-                              )}
-                            </button>
-
-                            {/* Lectures */}
-                            {expandedSections.includes(section.id) && (
-                              <div className="mt-2 ml-4 space-y-1 animate-fade-in">
-                                {section.lectures.length > 0 ? (
-                                  section.lectures.map(renderLecture)
-                                ) : (
-                                  <div className="p-3 text-sm text-sidebar-text-muted text-center">
-                                    {uiLabels.sidebar.lecturesInPreparation}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+            {/* 2차 시험과목 */}
+            <div className="mb-6">
+              <div className="mb-4 pb-2 border-b border-sidebar-navy-light">
+                <h3 className="text-sm font-semibold text-sidebar-text-secondary uppercase tracking-wider">
+                  {uiLabels.sidebar.secondarySubjects}
+                </h3>
               </div>
-            </>
-          )}
-        </div>
+              {curriculumData.filter(subject => subjectCategories.secondary.includes(subject.name)).map(subject => (
+                <div key={subject.id} className="mb-4">
+                  {/* Subject Header */}
+                  <button
+                    onClick={() => toggleSubject(subject.id)}
+                    className="w-full flex items-center justify-between p-3 text-base font-bold text-sidebar-text-primary hover:bg-sidebar-hover rounded-lg transition-colors"
+                  >
+                    <span>{subject.name}</span>
+                    {expandedSubjects.includes(subject.id) ? (
+                      <ChevronDown className="w-4 h-4 text-sidebar-text-secondary" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-sidebar-text-secondary" />
+                    )}
+                  </button>
+
+                  {/* Sections */}
+                  {expandedSubjects.includes(subject.id) && (
+                    <div className="mt-3 ml-4 space-y-2 animate-fade-in">
+                      {subject.sections.map(section => (
+                        <div key={section.id}>
+                          {/* Section Header */}
+                          <button
+                            onClick={() => toggleSection(section.id)}
+                            className="w-full flex items-center justify-between p-2.5 text-sm font-medium text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text-primary rounded-lg transition-colors"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span>{section.name}</span>
+                              {section.lectures.length > 0 && (
+                                <span className="text-xs bg-sidebar-navy-light text-sidebar-text-muted px-2 py-0.5 rounded-full">
+                                  {section.lectures.length}개
+                                </span>
+                              )}
+                            </div>
+                            {expandedSections.includes(section.id) ? (
+                              <ChevronDown className="w-4 h-4" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4" />
+                            )}
+                          </button>
+
+                          {/* Lectures */}
+                          {expandedSections.includes(section.id) && (
+                            <div className="mt-2 ml-4 space-y-1 animate-fade-in">
+                              {section.lectures.length > 0 ? (
+                                section.lectures.map(renderLecture)
+                              ) : (
+                                <div className="p-3 text-sm text-sidebar-text-muted text-center">
+                                  {uiLabels.sidebar.lecturesInPreparation}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </aside>
     </>
   );

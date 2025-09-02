@@ -1,5 +1,6 @@
+
 import { useState, useEffect, useRef } from "react";
-import { Play, Pause, Rewind, FastForward, Settings } from "lucide-react";
+import { Play, Pause, Rewind, FastForward, Settings, Maximize } from "lucide-react";
 import { uiLabels, defaultValues } from "@/data/uiLabels";
 import { useVideoProgress } from "@/hooks/useVideoProgress";
 
@@ -28,6 +29,7 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false, member
   const [currentProgress, setCurrentProgress] = useState(progress);
   const [isMinimized, setIsMinimized] = useState(false);
   const [videoDuration, setVideoDuration] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const playerRef = useRef<any>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const videoContainerRef = useRef<HTMLDivElement>(null);
@@ -176,16 +178,15 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false, member
     playerRef.current = new window.YT.Player('youtube-player', {
       videoId: videoId,
       playerVars: {
-        autoplay: 1,
-        mute: 1,
-        loop: 1,
+        autoplay: 0,
+        mute: 0,
+        loop: 0,
         color: 'white',
         controls: 0,
         modestbranding: 1,
         playsinline: 1,
         rel: 0,
         enablejsapi: 1,
-        playlist: videoId,
         iv_load_policy: 3,
         cc_load_policy: 0,
         fs: 1,
@@ -197,12 +198,12 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false, member
           setTotalTime(formatTime(duration));
           setVideoDuration(duration);
           
-          // 저장된 진도가 있으면 해당 위치로 이동
+          // 저장된 진도가 있으면 해당 위치로 이동 (이어보기 기능)
           if (memberId && lectureId) {
             const savedProgress = progressTracker.getSavedProgress();
-            if (savedProgress.lastWatchedTime > 0) {
+            if (savedProgress.lastWatchedTime > 5) { // 5초 이상인 경우에만 이어보기
               event.target.seekTo(savedProgress.lastWatchedTime);
-              console.log(`Resumed at ${savedProgress.lastWatchedTime}s (${savedProgress.progress}%)`);
+              console.log(`이어보기: ${savedProgress.lastWatchedTime}초부터 재생 (${savedProgress.progress}%)`);
             }
           }
           
@@ -278,6 +279,53 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false, member
       playerRef.current.setPlaybackRate(rate);
     }
   };
+
+  // 전체화면 토글
+  const handleFullscreen = () => {
+    const container = videoContainerRef.current;
+    if (!container) return;
+
+    if (!isFullscreen) {
+      if (container.requestFullscreen) {
+        container.requestFullscreen();
+      } else if ((container as any).webkitRequestFullscreen) {
+        (container as any).webkitRequestFullscreen();
+      } else if ((container as any).mozRequestFullScreen) {
+        (container as any).mozRequestFullScreen();
+      } else if ((container as any).msRequestFullscreen) {
+        (container as any).msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).mozCancelFullScreen) {
+        (document as any).mozCancelFullScreen();
+      } else if ((document as any).msExitFullscreen) {
+        (document as any).msExitFullscreen();
+      }
+    }
+  };
+
+  // 전체화면 상태 감지
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+    };
+  }, []);
 
   // Progress bar click handler
   const handleProgressClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -370,6 +418,15 @@ export const VideoPlayer = ({ videoUrl, title, progress, compact = false, member
                 <option value={1.5}>1.5x</option>
                 <option value={2}>2x</option>
               </select>
+
+              {/* 전체화면 버튼 */}
+              <button 
+                className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent-secondary rounded-lg transition-colors"
+                onClick={handleFullscreen}
+                title={isFullscreen ? "전체화면 해제" : "전체화면"}
+              >
+                <Maximize className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
 
               <button className="p-1.5 sm:p-2 hover:bg-accent/10 text-accent-secondary rounded-lg transition-colors">
                 <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
