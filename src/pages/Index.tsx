@@ -15,6 +15,7 @@ const Index = () => {
   const mockMemberId = "user_001"; // 임시 사용자 ID
   
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [currentLecture, setCurrentLecture] = useState({
     id: "1",
@@ -125,12 +126,14 @@ const Index = () => {
         <LectureSidebar 
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           currentLecture={currentLecture}
           onLectureSelect={handleLectureSelect}
         />
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-[336px]">
+        <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-[336px]'}`}>
           <div className="max-w-[1280px] mx-auto px-4 py-6">
             {/* Video Player Section */}
             <div className={`mb-8 ${
